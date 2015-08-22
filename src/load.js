@@ -8,8 +8,41 @@
 // Geometry mesh for all of the models.
 var models = {};
 
+var FLIP_MODELS = {'robot-arm':true, 'robot-leg':true};
+// Test if a model needs to get flipped.
+function modelNeedsFlip(name) {
+	return !!FLIP_MODELS[name];
+}
+
+// Flatten faces in geometry.
+function flattenGeometry(g, flip) {
+	var xsc = flip ? -1 : +1;
+	var ng = new THREE.Geometry();
+	var i, vert = g.vertices;
+	for (i = 0; i < g.faces.length; i++) {
+		var f = g.faces[i];
+		var v0 = vert[f.a], v1 = vert[f.b], v2 = vert[f.c];
+		ng.vertices.push(
+			new THREE.Vector3(v0.x * xsc, -v0.z, v0.y),
+			new THREE.Vector3(v1.x * xsc, -v1.z, v1.y),
+			new THREE.Vector3(v2.x * xsc, -v2.z, v2.y));
+		ng.faces.push(
+			flip ?
+				new THREE.Face3(i*3+0, i*3+2, i*3+1) :
+				new THREE.Face3(i*3+0, i*3+1, i*3+2));
+	}
+	ng.computeFaceNormals();
+	ng.computeVertexNormals();
+	return ng;
+}
+
 // Preload all models, call func when finished.
 function init_models(path_map, func) {
+	var matrix = (new THREE.Matrix4()).identity();
+	matrix.elements[5]  =  0;
+	matrix.elements[6]  = +1;
+	matrix.elements[9]  = -1;
+	matrix.elements[10] =  0;
 	var loader = new THREE.JSONLoader();
 	var modelCount = _.size(path_map.models);
 	var modelLoaded = 0;
@@ -17,7 +50,10 @@ function init_models(path_map, func) {
 		loader.load(
 			'assets/models/' + path + '.json',
 			function(geometry, materials) {
-				models[name] = geometry;
+				models[name] = flattenGeometry(geometry);
+				if (modelNeedsFlip) {
+					models[name + '-flip'] = flattenGeometry(geometry, true);
+				}
 				modelLoaded++;
 				if (modelLoaded == modelCount) {
 					func();
@@ -32,7 +68,13 @@ function init(path_map, func) {
 }
 
 // Get the named model.
-function getModel(name) {
+function getModel(name, flipped) {
+	var key = name;
+	if (flipped) {
+		key += '1';
+	} else {
+		key += '0';
+	}
 	var value = models[name];
 	if (typeof value !== 'object') {
 		console.error('Unknown model: ' + name);
