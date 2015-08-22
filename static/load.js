@@ -11,31 +11,20 @@
 	var i;
 	var ERR_WEBGL = 'Your browser does not seem to support WebGL.';
 	var ERR_SCRIPT = 'Could not load game script.';
-
-	var canvas = null, gl = null;
+	var failed = false;
+	var maindiv = document.getElementById('game');
 
 	function fail(reason) {
-		if (!canvas && !gl) {
+		if (failed) {
 			return;
 		}
 		console.error(reason);
-		maindiv.removeChild(canvas);
 		var err = document.createElement('p');
 		var text = document.createTextNode('Error: ' + reason);
 		err.className = 'error';
 		err.appendChild(text);
 		maindiv.appendChild(err);
-		canvas = null;
-		gl = null;
-	}
-
-	var maindiv = document.getElementById('game');
-	canvas = document.createElement('canvas');
-	maindiv.appendChild(canvas);
-	gl = canvas.getContext('webgl') ||
-		canvas.getContext('experimental-webgl');
-	if (!gl) {
-		return fail(ERR_WEBGL);
+		failed = true;
 	}
 
 	var SCRIPTS = [];
@@ -46,7 +35,7 @@
 			return;
 		}
 		try {
-			window.Game.init(canvas, gl, fail);
+			window.Game.init(maindiv, fail);
 		} catch (e) {
 			console.error(e);
 			fail(ERR_SCRIPT);

@@ -1,4 +1,5 @@
 {
     "browserify": true,
-    "devel": true
+    "devel": true,
+    "predef": ["THREE", "Howl", "Howler", "_"]
 }

@@ -30,6 +30,10 @@ class App(object):
                 'build/howler.js',
                 'howler',
                 self.howler_js),
+            self.system.build_module(
+                'build/three.js',
+                'three',
+                self.three_js),
             self.system.build(
                 'build/app.js',
                 self.app_js,
@@ -57,6 +61,10 @@ class App(object):
 
     def howler_js(self):
         with open('./node_modules/howler/howler.min.js', 'rb') as fp:
+            return fp.read()
+
+    def three_js(self):
+        with open('./node_modules/three/three.min.js', 'rb') as fp:
             return fp.read()
 
     def app_js(self):
