@@ -33,7 +33,9 @@ function flattenGeometry(g, flip) {
 	}
 	ng.computeFaceNormals();
 	ng.computeVertexNormals();
-	return ng;
+	var bg = new THREE.BufferGeometry();
+	bg.fromGeometry(ng);
+	return bg;
 }
 
 // Preload all models, call func when finished.
