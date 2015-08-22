@@ -5,6 +5,9 @@
    See LICENSE.txt for details. */
 'use strict';
 
+var load = require('./load');
+var robot = require('./robot');
+
 // The requestAnimationFrame handle.
 var handle = null;
 // The three.js renderer.
@@ -17,6 +20,10 @@ var camera;
 var controls;
 
 function init(path_map, container) {
+	load.init(path_map, function() { init2(container); });
+}
+
+function init2(container) {
 	var WIDTH = 800, HEIGHT = 450;
 
 	renderer = new THREE.WebGLRenderer();
@@ -39,23 +46,10 @@ function init(path_map, container) {
 	scene.add(light);
 
 	var loader = new THREE.JSONLoader();
-	var robot = new THREE.Group();
-	_.forEach(
-		['robot-leg', 'robot-arm', 'robot-torso', 'robot-head'],
-		function(name) {
-			loader.load(
-				'assets/models/' + path_map.models[name] + '.json',
-				function(geometry, materials) {
-					var material = new THREE.MeshPhongMaterial({color: 0x667788});
-					var mesh = new THREE.Mesh(geometry, material);
-					robot.add(mesh);
-				});
-		});
-	scene.add(robot);
-	robot.rotateOnAxis(new THREE.Vector3(1, 0, 0), Math.PI / 2);
+	var robotObj = new robot.Robot();
+	scene.add(robotObj.obj);
 
 	start();
-	return;
 }
 
 function start() {
