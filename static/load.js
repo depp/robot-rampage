@@ -27,7 +27,8 @@
 		failed = true;
 	}
 
-	var SCRIPTS = [];
+	var PATH_MAP = null;
+	var SCRIPTS = null;
 	var remaining = SCRIPTS.length;
 	function scriptLoad() {
 		remaining--;
@@ -35,7 +36,7 @@
 			return;
 		}
 		try {
-			window.Game.init(maindiv, fail);
+			window.Game.init(PATH_MAP, maindiv, fail);
 		} catch (e) {
 			console.error(e);
 			fail(ERR_SCRIPT);

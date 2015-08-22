@@ -7,14 +7,6 @@
 
 // The requestAnimationFrame handle.
 var handle = null;
-// The current canvas height.
-var canvasHeight = 0;
-// The last size of the canvas.
-var lastWidth = 0, lastHeight = 0;
-// The delay in millis before automatically resizing.
-var RESIZE_DELAY = 500;
-// The timestamp of the last resize.
-var lastResize = -1;
 // The three.js renderer.
 var renderer;
 // The three.js scene.
@@ -24,8 +16,7 @@ var camera;
 // The three.js controls.
 var controls;
 
-function init(container) {
-	// window.addEventListener('resize', resize, false);
+function init(path_map, container) {
 	var WIDTH = 800, HEIGHT = 450;
 
 	renderer = new THREE.WebGLRenderer();
@@ -43,19 +34,19 @@ function init(container) {
 	light.position.set(-10, 10, 10);
 	scene.add(light);
 
-	var material, geometry, mesh;
-
-	material = new THREE.MeshLambertMaterial({color: 0x55B663});
-	geometry = new THREE.BoxGeometry(1, 1, 1);
-	mesh = new THREE.Mesh(geometry, material);
-	scene.add(mesh);
-
-	material = new THREE.MeshLambertMaterial({color: 0xB66355});
-	geometry = new THREE.BoxGeometry(0.7, 0.7, 0.7);
-	mesh = new THREE.Mesh(geometry, material);
-	mesh.position.set(0, 0, 1);
-
-	scene.add(mesh);
+	var loader = new THREE.JSONLoader();
+	_.forEach(
+		['robot-leg', 'robot-arm', 'robot-torso', 'robot-head'],
+		function(name) {
+			loader.load(
+				'assets/models/' + path_map.models[name] + '.json',
+				function(geometry, materials) {
+					var material = new THREE.MeshPhongMaterial({color: 0x667788});
+					// var material = new THREE.MeshFaceMaterial(materials);
+					var mesh = new THREE.Mesh(geometry, material);
+					scene.add(mesh);
+				});
+		});
 
 	start();
 	return;
@@ -67,16 +58,15 @@ function start() {
 	}
 	handle = window.requestAnimationFrame(render);
 }
-/*
-function resize() {
-	var w = canvas.clientWidth;
-	var h = Math.max(1, Math.round(w * 9 / 16));
-	if (h != canvasHeight) {
-		canvas.style.height = h + 'px';
-		canvasHeight = h;
+
+function stop() {
+	if (!handle) {
+		return;
 	}
+	window.cancelAnimationFrame(handle);
+	handle = null;
 }
-*/
+
 function render(time) {
 	handle = window.requestAnimationFrame(render);
 	renderer.render(scene, camera);
@@ -84,5 +74,6 @@ function render(time) {
 
 window.Game = {
 	init: init,
-	start: start
+	start: start,
+	stop: stop
 };

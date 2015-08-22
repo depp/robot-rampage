@@ -8,6 +8,7 @@ from . import version
 from mako import template
 import json
 import os
+import re
 import tempfile
 
 class App(object):
@@ -41,6 +42,9 @@ class App(object):
                 bust=True),
         ]
 
+        path_map = {}
+        self.build_models(path_map)
+
         self.system.build(
             'build/index.html',
             self.index_html,
@@ -49,7 +53,23 @@ class App(object):
                 'static/style.css',
                 'static/load.js',
             ],
-            args=[scripts, ver])
+            args=[scripts, ver, path_map])
+
+    def build_models(self, path_map):
+        """Build all models, adding them to the path map."""
+        model_paths = {}
+        in_root = 'assets/models'
+        out_root = 'build/assets/models'
+        for path in build.all_files(in_root, exts={'.json'}):
+            relpath = os.path.relpath(path, in_root)
+            model_path = self.system.copy(
+                os.path.join(out_root, relpath),
+                path,
+                bust=True)
+            name = os.path.splitext(relpath)[0]
+            model_paths[name] = os.path.relpath(
+                os.path.splitext(model_path)[0], out_root)
+        path_map['models'] = model_paths
 
     def lodash_js(self):
         with tempfile.TemporaryDirectory() as path:
@@ -78,20 +98,24 @@ class App(object):
             data = fp.read()
         return build.minify_css(self.config, data).decode('UTF-8')
 
-    def index_js(self, scripts):
+    def index_js(self, scripts, path_map):
         """Get the JavaScript loader code."""
         with open('static/load.js') as fp:
             data = fp.read()
         scripts = [os.path.relpath(path, 'build/') for path in scripts]
+        repls = {
+            'SCRIPTS': scripts,
+            'PATH_MAP': path_map,
+        }
+        def repl(m):
+            name = m.group(1)
+            value = json.dumps(repls[name], separators=(',', ':'))
+            return 'var {} = {};'.format(name, repls[name])
+        data = re.sub(r'var ([\w]+) = null;', repl, data)
         return build.minify_js(
-            self.config,
-            data.replace(
-                'var SCRIPTS = [];',
-                'var SCRIPTS = {};'.format(
-                    json.dumps(scripts, separators=(',', ':'))))
-            .encode('UTF-8')).decode('UTF-8')
+            self.config, data.encode('UTF-8')).decode('UTF-8')
 
-    def index_html(self, scripts, ver):
+    def index_html(self, scripts, ver, path_map):
         """Get the main HTML page."""
         def relpath(path):
             return os.path.relpath(path, 'build/')
@@ -100,7 +124,7 @@ class App(object):
             relpath=relpath,
             scripts=scripts,
             css_data=self.index_css(),
-            js_data=self.index_js(scripts),
+            js_data=self.index_js(scripts, path_map),
             app_name='Robot Rampage',
             version=ver,
         )
