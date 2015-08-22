@@ -26,15 +26,20 @@ function init(path_map, container) {
 	scene = new THREE.Scene();
 
 	camera = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 0.1, 100);
-	camera.position.set(4, 4, 4);
+	camera.setLens(45);
+	camera.position.set(8, 8, 8);
 	camera.up.set(0, 0, 1);
-	camera.lookAt(new THREE.Vector3(0, 0, 0));
+	camera.lookAt(new THREE.Vector3(0, 0, 2.5));
 
-	var light = new THREE.PointLight(0xffffff);
-	light.position.set(-10, 10, 10);
+	var light = new THREE.PointLight(0xafafff);
+	light.position.set(0, 10, 10);
+	scene.add(light);
+	light = new THREE.PointLight(0xffafaf);
+	light.position.set(10, 0, 10);
 	scene.add(light);
 
 	var loader = new THREE.JSONLoader();
+	var robot = new THREE.Group();
 	_.forEach(
 		['robot-leg', 'robot-arm', 'robot-torso', 'robot-head'],
 		function(name) {
@@ -42,11 +47,12 @@ function init(path_map, container) {
 				'assets/models/' + path_map.models[name] + '.json',
 				function(geometry, materials) {
 					var material = new THREE.MeshPhongMaterial({color: 0x667788});
-					// var material = new THREE.MeshFaceMaterial(materials);
 					var mesh = new THREE.Mesh(geometry, material);
-					scene.add(mesh);
+					robot.add(mesh);
 				});
 		});
+	scene.add(robot);
+	robot.rotateOnAxis(new THREE.Vector3(1, 0, 0), Math.PI / 2);
 
 	start();
 	return;
