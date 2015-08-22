@@ -1,0 +1,27 @@
+{
+  "name": "RobotRampage",
+  "version": "0.1.0",
+  "description": "A game engine",
+  "author": "Dietrich Epp <depp@zdome.net>",
+  "main": "src/app.js",
+  "jshintConfig": {
+    "browserify": true,
+    "predef": [],
+    "devel": true
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "browserify": "^11.0.1",
+    "clean-css": "^3.r31.9",
+    "envify": "^3.4.0",
+    "font-awesome": "^4.4.0",
+    "howler": "^1.1.26",
+    "html-minifier": "^0.7.2",
+    "lodash-cli": "^3.10.1",
+    "uglifyjs": "^2.4.10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/depp/kitten-teleporter.git"
+  }
+}
