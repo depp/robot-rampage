@@ -19,7 +19,6 @@ function CitySegment(prev, w, h) {
 	this.obj = new THREE.Group();
 	this.bldgGroups = [];
 	var roads = new road.RoadNetwork(w, h);
-	roads.logTiles();
 	_.forEach(roads.blocks, function(block) {
 		var grp = new building.BuildingGroup(
 			block.x0, block.y0, block.x1, block.y1);
