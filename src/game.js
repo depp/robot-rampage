@@ -7,6 +7,7 @@
 
 var robot = require('./robot');
 var city = require('./city');
+var particles = require('./particles');
 
 // Game state class.
 function Game(width, height) {
@@ -35,16 +36,21 @@ function Game(width, height) {
 	var citySeg = new city.CitySegment(null, 32, 32);
 	citySeg.obj.position.set(-16, -16, 0);
 	this.scene.add(citySeg.obj);
+
+	this.particles = new particles.ParticleSystem();
+	this.scene.add(this.particles.obj);
 }
 
 // Advance world by one frame.
 Game.prototype.update = function() {
 	this.robot.update(this);
+	this.particles.update();
 };
 
 // Update graphics.
 Game.prototype.draw = function(renderer, frac) {
 	this.robot.draw(frac);
+	this.particles.draw(frac);
 	renderer.render(this.scene, this.camera);
 };
 
