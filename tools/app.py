@@ -45,7 +45,8 @@ class App(object):
         path_map = {}
         self.build_models(path_map)
         self.build_audio(path_map, 'sfx')
-        self.build_images(path_map)
+        self.build_images(path_map, 'images')
+        self.build_images(path_map, 'hud')
 
         self.system.build(
             'build/index.html',
@@ -96,11 +97,11 @@ class App(object):
                 key=lambda x: sort_order.index(os.path.splitext(x)[1]))
         path_map[dirname] = audio_files
 
-    def build_images(self, path_map):
+    def build_images(self, path_map, dirname):
         """Build the images."""
         images = {}
-        in_root = 'assets/images'
-        out_root = 'build/assets/images'
+        in_root = os.path.join('assets', dirname)
+        out_root = os.path.join('build/assets', dirname)
         for path in build.all_files(in_root, exts={'.png', '.jpg'}):
             relpath = os.path.relpath(path, in_root)
             name = os.path.splitext(relpath)[0]
@@ -110,7 +111,7 @@ class App(object):
                 bust=True)
             out_rel = os.path.relpath(out_path, out_root)
             images[name] = out_rel
-        path_map['images'] = images
+        path_map[dirname] = images
 
     def lodash_js(self):
         with tempfile.TemporaryDirectory() as path:

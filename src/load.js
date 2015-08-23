@@ -125,6 +125,34 @@ function getTexture(name) {
 }
 
 // =====================================================================
+// HUD images
+// =====================================================================
+
+var hudImages = {};
+
+// Preload all textures, call func when finished.
+function initHud(path_map, func) {
+	var imageCount = _.size(path_map.hud);
+	var imageLoaded = 0;
+	_.forOwn(path_map.hud, function(path, name) {
+		var img = new Image();
+		img.addEventListener('load', function() {
+			imageLoaded++;
+			if (imageLoaded == imageCount) {
+				func();
+			}
+		}, false);
+		img.src = 'assets/hud/' + path;
+		hudImages[name] = img;
+	});
+}
+
+// Get a HUD image by name.
+function getHudImage(name) {
+	return hudImages[name];
+}
+
+// =====================================================================
 // Sound effects
 // =====================================================================
 
@@ -151,7 +179,7 @@ function getSfx(name) {
 
 // Preload all resources, call func when finished.
 function init(path_map, func) {
-	var rem = 3;
+	var rem = 4;
 	function finish() {
 		rem--;
 		if (!rem) {
@@ -160,6 +188,7 @@ function init(path_map, func) {
 	}
 	initModels(path_map, finish);
 	initTextures(path_map, finish);
+	initHud(path_map, finish);
 	initSfx(path_map, finish);
 }
 
@@ -168,5 +197,6 @@ module.exports = {
 	getModel: getModel,
 	forModels: forModels,
 	getTexture: getTexture,
+	getHudImage: getHudImage,
 	getSfx: getSfx,
 };

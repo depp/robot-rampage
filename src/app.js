@@ -59,11 +59,6 @@ function stop() {
 
 // Draw the game state, updating it if necessary.
 function render(time) {
-	hudObj.clear();
-	var cxt = hudObj.cxt;
-	cxt.font = 'bold 24px sans';
-	cxt.fillStyle = 'white';
-	cxt.fillText('Hello, world', 10, 30);
 	var dt = param.DT * 1e3, rate = param.RATE * 1e-3;
 	handle = window.requestAnimationFrame(render);
 	var updateCount = 0, i;
@@ -84,7 +79,7 @@ function render(time) {
 		gameState.update();
 	}
 	var frac = (time - updateTime) * rate;
-	gameState.draw(renderer, frac);
+	gameState.draw(renderer, hudObj, frac);
 }
 
 window.Game = {
