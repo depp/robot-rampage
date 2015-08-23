@@ -6,12 +6,15 @@
 'use strict';
 
 var load = require('./load');
+var stateManager = require('./state');
 
 function Intro(width, height) {
 	var e;
 	var ce = document.createElement('div');
+	this.layer = ce;
 	ce.className = 'videoLayer';
 	e = document.createElement('video');
+	this.video = e;
 	e.controls = true;
 	_.forEach(load.getVideo('intro'), function(src) {
 		var se = document.createElement('source');
@@ -25,17 +28,22 @@ function Intro(width, height) {
 	a.className = 'button';
 	a.appendChild(document.createTextNode('Play Game >>>'));
 	a.onclick = function() {
-		console.log('CLICK');
+		stateManager.set({name: 'game'});
+		return false;
 	};
 	e.appendChild(a);
 	ce.appendChild(e);
-	console.log(ce);
 	document.getElementById('game').appendChild(ce);
 }
 
 Intro.prototype.update = function() {};
 
 Intro.prototype.draw = function(dt) {};
+
+Intro.prototype.destroy = function() {
+	this.video.pause();
+	this.layer.parentElement.removeChild(this.layer);
+};
 
 module.exports = {
 	Intro: Intro,
