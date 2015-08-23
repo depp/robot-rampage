@@ -5,6 +5,7 @@
    See LICENSE.txt for details. */
 'use strict';
 
+var load = require('./load');
 var building = require('./building');
 var road = require('./road');
 var param = require('./param');
@@ -25,6 +26,12 @@ function CitySegment(prev, w, h) {
 		this.obj.add(grp.obj);
 		this.bldgGroups.push(grp);
 	}, this);
+	var material = new THREE.MeshBasicMaterial({
+		map: load.getTexture('tiles'),
+	});
+	this.roadGeom = roads.createGeometry();
+	this.roadMesh = new THREE.Mesh(this.roadGeom, material);
+	this.obj.add(this.roadMesh);
 }
 
 module.exports = {

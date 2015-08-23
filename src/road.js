@@ -214,6 +214,20 @@ RoadNetwork.prototype._addIntersection = function(nn) {
 
 var T_LOT = 1, T_RINTER = 2, T_RVERT = 3, T_RHORI = 4, T_SIDE = 5;
 var T_ASCII = ' #+|-.';
+var T_UV = new Float32Array([
+	1, 2, 2, 2, 1, 1, 2, 1, // 0
+	0, 2, 1, 2, 0, 1, 1, 1, // T_LOT
+	0, 1, 1, 1, 0, 0, 1, 0, // T_RINTER
+	1, 1, 1, 0, 2, 1, 2, 0, // T_RVERT
+	1, 1, 2, 1, 1, 0, 2, 0, // T_RHORI
+	0, 2, 1, 2, 0, 1, 1, 1, // T_SIDE
+]);
+(function() {
+	var i;
+	for (i = 0; i < T_UV.length; i++) {
+		T_UV[i] *= 0.5;
+	}
+})();
 
 // Get the array of tiles for this road network.
 RoadNetwork.prototype.getTiles = function() {
@@ -286,7 +300,45 @@ RoadNetwork.prototype.logTiles = function() {
 	console.log(lines.join('\n'));
 };
 
+// Create geometry for the road network.
+RoadNetwork.prototype.createGeometry = function() {
+	var w = this.w, h = this.h, area = w * h, i, x, y;
 
+	var index = new Int16Array(area * 6);
+	for (i = 0; i < area; i++) {
+		index.set([i*4+0, i*4+1, i*4+2, i*4+2, i*4+1, i*4+3], i*6);
+	}
+
+	var pos = new Float32Array(area * 12);
+	for (x = 0; x < w; x++) {
+		for (y = 0; y < h; y++) {
+			pos.set([
+				x, y, 0,
+				x + 1, y, 0,
+				x, y + 1, 0,
+				x + 1, y + 1, 0
+			], (x * h + y) * 12);
+		}
+	}
+
+	var tiles = this.getTiles();
+	var uv = new Float32Array(area * 8), j;
+	for (i = 0; i < area; i++) {
+		var tile = tiles[i];
+		for (j = 0; j < 8; j++) {
+			uv[i*8+j] = T_UV[tile*8+j];
+		}
+	}
+
+	var geometry = new THREE.BufferGeometry();
+	geometry.addAttribute(
+		'index', new THREE.BufferAttribute(index, 1));
+	geometry.addAttribute(
+		'position', new THREE.BufferAttribute(pos, 3));
+	geometry.addAttribute(
+		'uv', new THREE.BufferAttribute(uv, 2));
+	return geometry;
+};
 
 module.exports = {
 	RoadNetwork: RoadNetwork,
