@@ -8,17 +8,11 @@
 var robot = require('./robot');
 var city = require('./city');
 var particles = require('./particles');
+var camera = require('./camera');
 
 // Game state class.
 function Game(width, height) {
 	this.scene = new THREE.Scene();
-
-	var camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-	camera.setLens(45);
-	camera.position.set(0, -16, 16);
-	camera.up.set(0, 0, 1);
-	camera.lookAt(new THREE.Vector3(0, 0, 2.5));
-	this.camera = camera;
 
 	var light = new THREE.PointLight(0xafafff);
 	light.position.set(0, 10, 10);
@@ -39,19 +33,23 @@ function Game(width, height) {
 
 	this.particles = new particles.ParticleSystem();
 	this.scene.add(this.particles.obj);
+
+	this.camera = new camera.Camera(this.robot, width, height);
 }
 
 // Advance world by one frame.
 Game.prototype.update = function() {
 	this.robot.update(this);
 	this.particles.update();
+	this.camera.update();
 };
 
 // Update graphics.
 Game.prototype.draw = function(renderer, frac) {
 	this.robot.draw(frac);
 	this.particles.draw(frac);
-	renderer.render(this.scene, this.camera);
+	this.camera.draw(frac);
+	renderer.render(this.scene, this.camera.camera);
 };
 
 module.exports = {

@@ -57,6 +57,7 @@ function render(time) {
 	var updateCount = 0, i;
 	if (updateTime < 0) {
 		updateTime = time;
+		updateCount = 1;
 	} else if (time >= updateTime + dt) {
 		if (time > updateTime + param.MAX_UPDATE_INTERVAL * 1e3) {
 			console.warn('Lag');

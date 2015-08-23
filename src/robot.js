@@ -48,6 +48,8 @@ function Robot() {
 	this.a0 = this.a1 = Math.PI / 2;
 	this.speed = 0;
 	this.weapon = new weapon.WeaponState();
+	// Used by the camera.
+	this.velocity = new THREE.Vector3();
 }
 
 // Advance world by one frame.
@@ -157,6 +159,10 @@ Robot.prototype.update = function(game) {
 			}
 		}
 		var dirx = Math.cos(this.a1), diry = Math.sin(this.a1);
+		this.velocity.set(
+			this.speed * dirx,
+			this.speed * diry,
+			0);
 		this.x1 += this.speed * param.DT * dirx;
 		this.y1 += this.speed * param.DT * diry;
 	}).call(this);

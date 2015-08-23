@@ -76,4 +76,15 @@ module.exports = {
 		// Chance to allow a narrow subdivision.
 		narrowChance: 0.6,
 	},
+	CAMERA: {
+		focal: 45,
+		targetSmooth: 0.2,
+		positionSmooth: 0.15,
+		distance0: 16,
+		distance1: 20,
+		angle0: (Math.PI / 180) * 35,
+		angle1: (Math.PI / 180) * 45,
+		topSpeed: 8,
+		predictTime: 0.8,
+	},
 };
