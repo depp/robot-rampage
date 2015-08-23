@@ -28,7 +28,7 @@ var TRIPLE_BEAM = _.assign({
 }, BEAM_BASE);
 
 // Calculate a laser trace {v1, v2}.
-function laserTrace(robot, angleX, angleY, wstat) {
+function laserTrace(game, robot, angleX, angleY, wstat) {
 	var rstat = robot.stats;
 	var euler = new THREE.Euler(
 		0,
@@ -42,7 +42,9 @@ function laserTrace(robot, angleX, angleY, wstat) {
 					 .applyEuler(euler))
 			.multiplyScalar(rstat.scale)
 			.add(new THREE.Vector3(robot.x1, robot.y1, 0));
-	var v2 = dir.multiplyScalar(10).add(v1);
+	var ray = new THREE.Ray(v1, dir);
+	game.city.raycast(ray);
+	var v2 = dir.multiplyScalar(20).add(v1);
 	return {
 		pos1: v1, pos2: v2,
 		vel1: robot.velocity,
@@ -95,7 +97,7 @@ WeaponState.prototype.updateLaser = function(game, robot, action) {
 	if (action && !this.latched && !this.cooldown) {
 		var wstat = param.WEAPON.laser;
 		var rstat = robot.stats;
-		var trace = laserTrace(robot, 0, wstat.angleY, wstat);
+		var trace = laserTrace(game, robot, 0, wstat.angleY, wstat);
 		this.latched = true;
 		this.cooldown = wstat.cooldown;
 		load.getSfx('shoot').play();
@@ -110,9 +112,9 @@ WeaponState.prototype.updateTriple = function(game, robot, action) {
 		var wstat = param.WEAPON.triple;
 		var rstat = robot.stats;
 		var traces = [
-			laserTrace(robot,             0, wstat.angleY, wstat),
-			laserTrace(robot, -wstat.angleX, wstat.angleY, wstat),
-			laserTrace(robot, +wstat.angleX, wstat.angleY, wstat),
+			laserTrace(game, robot,             0, wstat.angleY, wstat),
+			laserTrace(game, robot, -wstat.angleX, wstat.angleY, wstat),
+			laserTrace(game, robot, +wstat.angleX, wstat.angleY, wstat),
 		];
 		this.cooldown = wstat.cooldown;
 		load.getSfx('shoot').play();

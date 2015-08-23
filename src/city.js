@@ -137,6 +137,33 @@ function City() {
 	}, this);
 }
 
+// Test intersection with the city geometry.
+City.prototype.raycast = function(ray) {
+	var origin = ray.origin;
+	var terminus = (new THREE.Vector3()).copy(ray.direction)
+			.multiplyScalar(15).add(origin);
+	console.log(origin, ray.terminus);
+	var bbox = (new THREE.Box3()).setFromPoints([origin, terminus]);
+	console.log(bbox);
+	var blocks = [];
+	_.forEach(this.bldBlocks, function(block) {
+		if (!bbox.isIntersectionBox(block.bbox)) {
+			return;
+		}
+		var point = ray.intersectBox(block.bbox);
+		if (!point) {
+			return;
+		}
+		blocks.push({
+			block: block,
+			point: point,
+			dist: point.dot(ray.direction),
+		});
+	});
+	blocks.sort(function(a, b) { return a.dist - b.dist; });
+	console.log(blocks);
+};
+
 // Subdivide an area of the road network with roads.
 City.prototype._subdivide = function(parm, block, roadMax) {
 	var subdivide = parm.subdivide;

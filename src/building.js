@@ -215,6 +215,7 @@ function BuildingGroup(x0, y0, x1, y1) {
 	this.obj = new THREE.Group();
 	this.obj.position.set(x0, y0, 0);
 
+	var bboxes = [];
 	// Place buildings at points on the perimiter.
 	perimeter(w, h, function(x, y, dir) {
 		var totalWeight = 0;
@@ -298,7 +299,8 @@ function BuildingGroup(x0, y0, x1, y1) {
 			// Place the building.
 			(function() {
 				var ox = geom.offX, sx = geom.sizeX, oy = geom.offY, sy = geom.sizeY;
-				setRect(bx, by, dir & 1 ? sy : sx, dir & 1 ? sx : sy, 1);
+				var bsx = dir & 1 ? sy : sx, bsy = dir & 1 ? sx : sy;
+				setRect(bx, by, bsx, bsy, 1);
 				if (flipY) {
 					ox = -ox - sx;
 					dir = (dir + 2) & 3;
@@ -313,9 +315,19 @@ function BuildingGroup(x0, y0, x1, y1) {
 				}
 				mesh.rotation.set(0, 0, dir * (Math.PI / 2), 'XYZ');
 				group.obj.add(mesh);
+				bboxes.push(new THREE.Box3(
+					new THREE.Vector3(x0 + bx, y0 + by, 0),
+					new THREE.Vector3(
+						x0 + bx + bsx, y0 + by + bsy,
+						mesh.geometry.boundingBox.max.z)));
 			})();
 		})();
 	});
+	var bbox = new THREE.Box3();
+	bbox.copy(bboxes[0]);
+	_.forEach(bboxes, bbox.union, bbox);
+	this.bboxes = bboxes;
+	this.bbox = bbox;
 }
 
 module.exports = {
