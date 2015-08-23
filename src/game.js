@@ -35,7 +35,6 @@ function Game(width, height) {
 
 	this.camera = new camera.Camera(this.robot, width, height);
 
-	this.propertyDamage = 479888;
 	this.timeLeft = 120;
 	this.weaponIcons = load.getHudImage('weapon-icons');
 	console.log(this.weaponIcons);
@@ -50,12 +49,19 @@ Game.prototype.update = function() {
 	this.camera.update();
 };
 
+// http://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
+function numberWithCommas(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 // Draw the HUD.
 Game.prototype.drawHud = function(hud) {
 	hud.clear();
 	var cxt = hud.cxt, w = hud.canvas.width, h = hud.canvas.height;
 	cxt.fillText('Objective: Destroy', 10, 30);
-	cxt.fillText('Property Damage: $1,489,500', 10, h - 10);
+	cxt.fillText(
+		'Property Damage: $' + numberWithCommas(this.city.propertyDamage),
+		10, h - 10);
 	var i = 0;
 	cxt.drawImage(
 		this.weaponIcons,

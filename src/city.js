@@ -142,6 +142,7 @@ function City() {
 	this.pendingExplosions = [];
 	this.explosionLight = new light.Light();
 	this.obj.add(this.explosionLight.obj);
+	this.propertyDamage = 0;
 }
 
 var GROUND = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
@@ -208,6 +209,13 @@ City.prototype.raycast = function(ray) {
 	return {hit: hitType, end: terminus};
 };
 
+// Calculate the value of a building.
+function buildingValue(box) {
+	return Math.round(
+		Math.pow(util.boxVolume(box), 1.8) *
+			(0.5 + Math.random()) * 20000) * 5;
+}
+
 // Damage the city.
 City.prototype.damage = function(center, size, amt) {
 	var box = (new THREE.Box3()).setFromCenterAndSize(center, size);
@@ -221,6 +229,8 @@ City.prototype.damage = function(center, size, amt) {
 			var dist = center.distanceTo(binfo.bbox.center(vec));
 			var bsz = binfo.bbox.min.distanceTo(binfo.bbox.max) / 2;
 			if (dist < size + bsz) {
+				var value = buildingValue(binfo.bbox);
+				this.propertyDamage += value;
 				this.pendingExplosions.push(binfo.bbox);
 				binfo.obj.parent.remove(binfo.obj);
 				binfo.obj = null;
