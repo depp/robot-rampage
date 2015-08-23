@@ -26,7 +26,7 @@ function CitySegment(prev, w, h) {
 		this.obj.add(grp.obj);
 		this.bldgGroups.push(grp);
 	}, this);
-	var material = new THREE.MeshBasicMaterial({
+	var material = new THREE.MeshLambertMaterial({
 		map: load.getTexture('tiles'),
 	});
 	this.roadGeom = roads.createGeometry();

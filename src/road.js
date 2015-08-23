@@ -330,6 +330,13 @@ RoadNetwork.prototype.createGeometry = function() {
 		}
 	}
 
+	var normal = new Float32Array(area * 12);
+	for (i = 0; i < area * 12; i++) {
+		normal[i*3+0] = 0;
+		normal[i*3+1] = 0;
+		normal[i*3+2] = 1;
+	}
+
 	var geometry = new THREE.BufferGeometry();
 	geometry.addAttribute(
 		'index', new THREE.BufferAttribute(index, 1));
@@ -337,6 +344,8 @@ RoadNetwork.prototype.createGeometry = function() {
 		'position', new THREE.BufferAttribute(pos, 3));
 	geometry.addAttribute(
 		'uv', new THREE.BufferAttribute(uv, 2));
+	geometry.addAttribute(
+		'normal', new THREE.BufferAttribute(normal, 3));
 	return geometry;
 };
 
