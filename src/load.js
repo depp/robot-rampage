@@ -5,6 +5,10 @@
    See LICENSE.txt for details. */
 'use strict';
 
+// =====================================================================
+// Models
+// =====================================================================
+
 // Geometry mesh for all of the models.
 var models = {};
 
@@ -41,7 +45,7 @@ function flattenGeometry(g, name, flip) {
 }
 
 // Preload all models, call func when finished.
-function init_models(path_map, func) {
+function initModels(path_map, func) {
 	var matrix = (new THREE.Matrix4()).identity();
 	matrix.elements[5]  =  0;
 	matrix.elements[6]  = +1;
@@ -65,11 +69,6 @@ function init_models(path_map, func) {
 				}
 			});
 	});
-}
-
-// Preload all resources, call func when finished.
-function init(path_map, func) {
-	init_models(path_map, func);
 }
 
 // Get the named model.
@@ -96,8 +95,47 @@ function forModels(func, thisArg) {
 	});
 }
 
+// =====================================================================
+// Sound effects
+// =====================================================================
+
+// Sound effects
+var sfx = {};
+
+function initSfx(path_map, func) {
+	_.forOwn(path_map.sfx, function(paths, name) {
+		var npaths = _.collect(paths, function(path) {
+			return 'assets/sfx/' + path;
+		});
+		sfx[name] = new Howl({urls: npaths});
+	});
+	func();
+}
+
+function getSfx(name) {
+	return sfx[name];
+}
+
+// =====================================================================
+// Common
+// =====================================================================
+
+// Preload all resources, call func when finished.
+function init(path_map, func) {
+	var rem = 2;
+	function finish() {
+		rem--;
+		if (!rem) {
+			func();
+		}
+	}
+	initModels(path_map, finish);
+	initSfx(path_map, finish);
+}
+
 module.exports = {
 	init: init,
 	getModel: getModel,
 	forModels: forModels,
+	getSfx: getSfx,
 };

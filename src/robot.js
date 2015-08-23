@@ -179,6 +179,10 @@ Robot.prototype.update = function(game) {
 		this.x1 += this.speed * param.DT * dirx;
 		this.y1 += this.speed * param.DT * diry;
 	}).call(this);
+
+	if (ctl.action) {
+		load.getSfx('shoot').play();
+	}
 };
 
 // Update graphics.
