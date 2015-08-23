@@ -9,6 +9,7 @@ var param = require('./param');
 var load = require('./load');
 var particles = require('./particles');
 var util = require('./util');
+var light = require('./light');
 
 var BEAM_BASE = {
 	speed: 0.25,
@@ -61,26 +62,10 @@ function WeaponState() {
 	this.warmup = 0;
 	this.latched = false;
 	this.update = true ? this.updateLaser : this.updateTriple;
-	this.light = new THREE.PointLight(0xffffff);
-	this.light.position.set(0, 4, 2.5);
-	this.light.distance = 15;
-	this.light.intensity = 0;
-	this.lightTime = 0;
-	this.lightScale = 0;
-	this.obj = this.light;
+	this.light = new light.Light();
+	this.light.obj.position.set(0, 4, 2.5);
+	this.obj = this.light.obj;
 }
-
-// Flash the light.
-WeaponState.prototype.flashLight = function(light) {
-	this.light.color.setHex(light.color);
-	this.lightTime = light.time;
-	this.lightScale = light.intensity / light.time;
-	// this.light.distance = light.distance;
-};
-
-// Fire a laser beam from the robot.
-WeaponState.prototype.fireLaser = function(game, robot, traces) {
-};
 
 // Common update function.
 WeaponState.prototype.updateCommon = function(action) {
@@ -91,8 +76,7 @@ WeaponState.prototype.updateCommon = function(action) {
 		this.latched = false;
 		this.warmup = 0;
 	}
-	this.lightTime = Math.max(0, this.lightTime - param.DT);
-	this.light.intensity = this.lightTime * this.lightScale;
+	this.light.update();
 };
 
 // Update the weapon.
@@ -106,7 +90,7 @@ WeaponState.prototype.updateLaser = function(game, robot, action) {
 		this.cooldown = wstat.cooldown;
 		load.getSfx('shoot').play();
 		game.particles.add(new particles.Beam([trace], LASER_BEAM));
-		this.flashLight(wstat.light);
+		this.light.flash(wstat.light);
 	}
 };
 
@@ -123,7 +107,7 @@ WeaponState.prototype.updateTriple = function(game, robot, action) {
 		this.cooldown = wstat.cooldown;
 		load.getSfx('shoot').play();
 		game.particles.add(new particles.Beam(traces, TRIPLE_BEAM));
-		this.flashLight(wstat.light);
+		this.light.flash(wstat.light);
 	}
 };
 
