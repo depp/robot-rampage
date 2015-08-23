@@ -6,6 +6,7 @@
 'use strict';
 
 var robot = require('./robot');
+var city = require('./city');
 
 // Game state class.
 function Game(width, height) {
@@ -30,6 +31,8 @@ function Game(width, height) {
 
 	this.robot = new robot.Robot();
 	this.scene.add(this.robot.obj);
+
+	new city.CitySegment(null, 32, 32);
 }
 
 // Advance world by one frame.

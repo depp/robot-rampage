@@ -45,4 +45,16 @@ module.exports = {
 		backwardAngle: Math.PI * 0.8,
 		latchSpeed: 1,
 	},
+	CITY: {
+		// Range of sizes for city areas subdivided with roads of the given size.
+		// Minimum distance between roads of the given size.
+		subdivide: [
+			{ min:     6, max:   6*5, dist:  0 },
+			{ min:   5*5, max: 12*12, dist:  1 },
+			{ min: 10*10, max: 64*64, dist:  8 },
+			{ min: 30*30, max:     0, dist: 16 },
+		],
+		// Maximum length of a city block.
+		blockLength: 10,
+	},
 };
