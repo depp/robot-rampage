@@ -54,12 +54,17 @@ function Robot() {
 }
 
 // Advance world by one frame.
-Robot.prototype.update = function(game) {
+Robot.prototype.update = function(game, allowInput) {
 	this.x0 = this.x1;
 	this.y0 = this.y1;
 	this.a0 = this.a1;
 
 	var ctl = input.gameInput();
+	if (!allowInput) {
+		ctl.x = 0;
+		ctl.y = 0;
+		ctl.action = false;
+	}
 	var stat = param.ROBOT;
 
 	// Update angle and speed from controls.

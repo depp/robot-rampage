@@ -35,7 +35,7 @@ function Game(width, height) {
 
 	this.camera = new camera.Camera(this.robot, width, height);
 
-	this.timeLeft = 120;
+	this.timeLeft = 15;
 	this.weaponIcons = load.getHudImage('weapon-icons');
 	console.log(this.weaponIcons);
 	this.music = load.getMusic('the-humans-will-burn');
@@ -45,7 +45,7 @@ function Game(width, height) {
 // Advance world by one frame.
 Game.prototype.update = function() {
 	this.timeLeft -= param.DT;
-	this.robot.update(this);
+	this.robot.update(this, this.timeLeft > 0);
 	this.city.update(this);
 	this.particles.update();
 	this.camera.update();
