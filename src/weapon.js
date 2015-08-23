@@ -10,7 +10,29 @@ var load = require('./load');
 
 // Fire a laser beam from the robot.
 function fireLaser(game, robot) {
+	var i;
 
+	var count = 1000;
+	var geom = new THREE.Geometry();
+	var material = new THREE.PointCloudMaterial({
+		color: 0xffffffff,
+		size: 1.5,
+		map: load.getTexture('red-pulse'),
+		transparent: true,
+		blending: THREE.AdditiveBlending,
+		depthWrite: false,
+	});
+
+	for (i = 0; i < count; i++) {
+		geom.vertices.push(
+			new THREE.Vector3(
+				Math.random() * 10 - 5,
+				Math.random() * 10 - 5,
+				Math.random() * 5));
+	}
+
+	var cloud = new THREE.PointCloud(geom, material);
+	game.scene.add(cloud);
 }
 
 function WeaponState() {

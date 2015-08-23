@@ -96,6 +96,35 @@ function forModels(func, thisArg) {
 }
 
 // =====================================================================
+// Textures
+// =====================================================================
+
+var textures = {};
+
+// Preload all textures, call func when finished.
+function initTextures(path_map, func) {
+	var loader = new THREE.TextureLoader();
+	var imageCount = _.size(path_map.images);
+	var imageLoaded = 0;
+	_.forOwn(path_map.images, function(path, name) {
+		loader.load(
+			'assets/images/' + path,
+			function(texture) {
+				textures[name] = texture;
+				imageLoaded++;
+				if (imageLoaded == imageCount) {
+					func();
+				}
+			});
+	});
+}
+
+// Get a texture by name.
+function getTexture(name) {
+	return textures[name];
+}
+
+// =====================================================================
 // Sound effects
 // =====================================================================
 
@@ -122,7 +151,7 @@ function getSfx(name) {
 
 // Preload all resources, call func when finished.
 function init(path_map, func) {
-	var rem = 2;
+	var rem = 3;
 	function finish() {
 		rem--;
 		if (!rem) {
@@ -130,6 +159,7 @@ function init(path_map, func) {
 		}
 	}
 	initModels(path_map, finish);
+	initTextures(path_map, finish);
 	initSfx(path_map, finish);
 }
 
@@ -137,5 +167,6 @@ module.exports = {
 	init: init,
 	getModel: getModel,
 	forModels: forModels,
+	getTexture: getTexture,
 	getSfx: getSfx,
 };

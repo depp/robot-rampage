@@ -45,6 +45,7 @@ class App(object):
         path_map = {}
         self.build_models(path_map)
         self.build_audio(path_map, 'sfx')
+        self.build_images(path_map)
 
         self.system.build(
             'build/index.html',
@@ -94,6 +95,22 @@ class App(object):
             flist.sort(
                 key=lambda x: sort_order.index(os.path.splitext(x)[1]))
         path_map[dirname] = audio_files
+
+    def build_images(self, path_map):
+        """Build the images."""
+        images = {}
+        in_root = 'assets/images'
+        out_root = 'build/assets/images'
+        for path in build.all_files(in_root, exts={'.png', '.jpg'}):
+            relpath = os.path.relpath(path, in_root)
+            name = os.path.splitext(relpath)[0]
+            out_path = self.system.copy(
+                os.path.join(out_root, relpath),
+                path,
+                bust=True)
+            out_rel = os.path.relpath(out_path, out_root)
+            images[name] = out_rel
+        path_map['images'] = images
 
     def lodash_js(self):
         with tempfile.TemporaryDirectory() as path:
