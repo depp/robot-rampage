@@ -29,7 +29,6 @@ function Beam(v1, v2, param) {
 	var spread = param.spread || 0.5;
 	var velocity = param.velocity || 1.0;
 	var texture = param.texture || 'read-pulse';
-	this.geometry = new THREE.Geometry();
 	var material = new THREE.PointCloudMaterial({
 		color: 0xffffffff,
 		size: 1.5,
@@ -39,20 +38,37 @@ function Beam(v1, v2, param) {
 		depthWrite: false,
 	});
 	var i;
+
+	this.geometry = new THREE.BufferGeometry();
+	var vertex = new Float32Array(count * 3);
+	this.velocity = new Float32Array(count * 3);
 	for (i = 0; i < count; i++) {
 		var frac = Math.random();
-		this.geometry.vertices.push(
-			new THREE.Vector3(
-				v1.x + (v2.x - v1.x) * frac + (Math.random() * 2 - 1) * spread,
-				v1.y + (v2.y - v1.y) * frac + (Math.random() * 2 - 1) * spread,
-				v1.z + (v2.z - v1.z) * frac + (Math.random() * 2 - 1) * spread));
+		vertex.set([
+			v1.x + (v2.x - v1.x) * frac + (Math.random() * 2 - 1) * spread,
+			v1.y + (v2.y - v1.y) * frac + (Math.random() * 2 - 1) * spread,
+			v1.z + (v2.z - v1.z) * frac + (Math.random() * 2 - 1) * spread,
+		], i * 3);
+		this.velocity.set([
+			(Math.random() * 2 - 1) * velocity,
+			(Math.random() * 2 - 1) * velocity,
+			(Math.random() * 2 - 1) * velocity,
+		], i * 3);
 	}
+	this.geometry.addAttribute(
+		'position', new THREE.BufferAttribute(vertex, 3));
 	this.time = 1.0;
 	this.dead = false;
 	this.obj = new THREE.PointCloud(this.geometry, material);
 }
 
+// Update graphics.
 Beam.prototype.draw = function(dt) {
+	var i, attr = this.geometry.getAttribute('position'), arr = attr.array;
+	for (i = 0; i < arr.length; i++) {
+		arr[i] += this.velocity[i] * dt;
+	}
+	attr.needsUpdate = true;
 };
 
 // Advance world by one frame.
