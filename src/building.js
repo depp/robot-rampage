@@ -1,3 +1,8 @@
+/* Copyright 2015 Dietrich Epp.
+
+   This file is part of Robot Rampage.  The Robot Rampage source
+   code is distributed under the terms of the MIT license.
+   See LICENSE.txt for details. */
 'use strict';
 
 var load = require('./load');
@@ -166,26 +171,6 @@ function perimeter(w, h, func, thisArg) {
 	}
 }
 
-/*
-// Format points as a string.
-function logPerimeter(w, h) {
-	var pts = [];
-	perimeter(w, h, function(x, y, dir) {
-		pts.push('(' + x + ',' + y + ',' + dir + ')');
-	});
-	console.log('PERIM ' + w + ' ' + h + ': ' + pts.join(' '));
-}
-
-logPerimeter(1, 1);
-logPerimeter(1, 1);
-logPerimeter(1, 10);
-logPerimeter(1, 10);
-logPerimeter(10, 1);
-logPerimeter(10, 1);
-logPerimeter(4, 5);
-logPerimeter(5, 4);
-*/
-
 // Class for a group of buildings.  Randomly generates buildings which
 // fill an area with the given width and height.
 function BuildingGroup(w, h) {
@@ -225,29 +210,14 @@ function BuildingGroup(w, h) {
 		}
 	}
 
-	// Dump rect to the console.
-	function dumpStatus() {
-		var lines = [], y, x, line;
-		for (y = h - 1; y >= 0; y--) {
-			line = '';
-			for (x = 0; x < w; x++) {
-				line += status[x * h + y] ? 'X' : '.';
-			}
-			lines.push(line);
-		}
-		console.log(lines.join('\n'));
-	}
-
 	var group = this;
 	this.obj = new THREE.Group();
 
 	// Place buildings at points on the perimiter.
 	perimeter(w, h, function(x, y, dir) {
-		console.log('Placing at:', x, y);
 		var totalWeight = 0;
 		var candidates = [];
 		if (!rectIsEmpty(x, y, 1, 1)) {
-			console.log('FULL');
 			return;
 		}
 		_.forEach(buildings, function(size) {
@@ -306,7 +276,6 @@ function BuildingGroup(w, h) {
 				}
 				var c = candidates[index];
 				var size = c.size;
-				console.log(size);
 				// Choose a random building in that size, randomly flipping it.
 				if (size.geoms.length > 1) {
 					geom = size.geoms[Math.floor(Math.random() * size.geoms.length)];
@@ -328,8 +297,6 @@ function BuildingGroup(w, h) {
 			(function() {
 				var ox = geom.offX, sx = geom.sizeX, oy = geom.offY, sy = geom.sizeY;
 				setRect(bx, by, dir & 1 ? sy : sx, dir & 1 ? sx : sy, 1);
-				console.log('Updating rect:', bx, sx, by, sy);
-				dumpStatus();
 				if (flipY) {
 					ox = -ox - sx;
 					dir = (dir + 2) & 3;
