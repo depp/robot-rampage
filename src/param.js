@@ -18,6 +18,24 @@ module.exports = {
 
 	// Robot stats.
 	ROBOT: {
-		speed: 5,
+		// Forward acceleration and maximum speed.
+		fwdAccel: 2.5,
+		fwdSpeed: 5,
+		// Backward acceleration and maximum speed.
+		bakAccel: 2.5,
+		bakSpeed: 5,
+		// Angular acceleration and maximum speed.
+		angAccel: 10,
+		angSpeed: 2.5,
+		// Control angles in the "forward" range move the robot forward,
+		// angles in the "backward" range move the robot backward.
+		// As the speed increases towards the latch speed, the range
+		// of angles for the direction of movement get wider, allowing
+		// the player to keep momentum and turn if moving, but turn
+		// while stating still otherwise.
+		forwardAngle: Math.PI * 0.3,
+		latchAngle: Math.PI * 0.6,
+		backwardAngle: Math.PI * 0.8,
+		latchSpeed: 1,
 	},
 };
