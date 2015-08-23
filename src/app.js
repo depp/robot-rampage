@@ -10,6 +10,7 @@ var input = require('./input');
 var param = require('./param');
 var game = require('./game');
 var hud = require('./hud');
+var intro = require('./intro');
 
 // The requestAnimationFrame handle.
 var handle;
@@ -22,18 +23,21 @@ var gameState;
 // The HUD object.
 var hudObj;
 
+var WIDTH = 800, HEIGHT = 450;
+
 function init(path_map, container) {
 	load.init(path_map, function() {
-		var WIDTH = 800, HEIGHT = 450;
 
 		hudObj = new hud.HUD(WIDTH, HEIGHT);
-		hudObj.canvas.className = 'layer2';
+		hudObj.canvas.className = 'hudLayer';
 		container.appendChild(hudObj.canvas);
 		renderer = new THREE.WebGLRenderer();
 		renderer.setSize(WIDTH, HEIGHT);
-		renderer.domElement.className = 'layer1';
+		renderer.domElement.className = 'glLayer';
 		container.appendChild(renderer.domElement);
-		gameState = new game.Game(WIDTH, HEIGHT);
+		// gameState = new game.Game(WIDTH, HEIGHT);
+		gameState = new intro.Intro(WIDTH, HEIGHT);
+
 		input.init();
 		start();
 	});

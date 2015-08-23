@@ -23,6 +23,8 @@ CONTENT_TYPE = {
     '.jpg': 'image/jpeg',
     '.m4a': 'audio/mpeg4',
     '.ogg': 'audio/ogg',
+    '.mp4': 'video/mp4',
+    '.webm': 'video/webm',
 }
 
 def error_method_not_allowed(env, start_response):

@@ -44,7 +44,8 @@ class App(object):
 
         path_map = {}
         self.build_models(path_map)
-        self.build_audio(path_map, 'sfx')
+        self.build_av(path_map, 'sfx', ['.ogg', '.m4a'])
+        self.build_av(path_map, 'video', ['.mp4', '.webm'])
         self.build_images(path_map, 'images')
         self.build_images(path_map, 'hud')
 
@@ -74,12 +75,12 @@ class App(object):
                 os.path.splitext(model_path)[0], out_root)
         path_map['models'] = model_paths
 
-    def build_audio(self, path_map, dirname):
+    def build_av(self, path_map, dirname, extensions):
         """Build the sound effects, adding them to the path map."""
         audio_files = {}
         in_root = os.path.join('assets', dirname)
         out_root = os.path.join('build/assets', dirname)
-        sort_order = ['.ogg', '.m4a']
+        sort_order = list(extensions)
         for path in build.all_files(in_root, exts=set(sort_order)):
             relpath = os.path.relpath(path, in_root)
             name = os.path.splitext(relpath)[0];

@@ -174,12 +174,44 @@ function getSfx(name) {
 }
 
 // =====================================================================
+// Video
+// =====================================================================
+
+// Videos
+var video = {};
+
+function videoType(path) {
+	var re = /(?:\.([^.]+))?$/;
+	var ext = re.exec(path)[1];
+	switch (ext) {
+	case 'mp4': return 'video/mp4';
+	case 'webm': return 'video/webm';
+	}
+}
+
+function initVideo(path_map, func) {
+	_.forOwn(path_map.video, function(paths, name) {
+		video[name] = _.collect(paths, function(path) {
+			return {
+				uri: 'assets/video/' + path,
+				type: videoType(path),
+			};
+		});
+	});
+	func();
+}
+
+function getVideo(name) {
+	return video[name];
+}
+
+// =====================================================================
 // Common
 // =====================================================================
 
 // Preload all resources, call func when finished.
 function init(path_map, func) {
-	var rem = 4;
+	var rem = 5;
 	function finish() {
 		rem--;
 		if (!rem) {
@@ -190,6 +222,7 @@ function init(path_map, func) {
 	initTextures(path_map, finish);
 	initHud(path_map, finish);
 	initSfx(path_map, finish);
+	initVideo(path_map, finish);
 }
 
 module.exports = {
@@ -199,4 +232,5 @@ module.exports = {
 	getTexture: getTexture,
 	getHudImage: getHudImage,
 	getSfx: getSfx,
+	getVideo: getVideo,
 };

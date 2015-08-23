@@ -54,9 +54,22 @@ a:hover {
     top: 0;
     width: 100%;
 }
-.layer1 {
+.glLayer {
     z-index: 0;
 }
-.layer2 {
+.hudLayer {
     z-index: 1;
+}
+.videoLayer {
+    position: absolute;
+    left: 0;
+    top: 0,
+    width: 100%;
+    height: 450px;
+    z-index: 2;
+}
+.videoLayer video {
+    position: absolute;
+    left: 80px;
+    top: 45px;
 }
