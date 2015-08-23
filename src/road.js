@@ -228,30 +228,35 @@ RoadNetwork.prototype.getTiles = function() {
 			}
 		}
 	}
+	function fillRoads(intersections, amt, xroad, yroad) {
+		_.forEach(intersections, function(nn) {
+			var n2, sz;
+			// Fill horizontal road.
+			n2 = nn.link0;
+			sz = nn.size0 - amt;
+			if (sz > 0) {
+				setRect(
+					nn.x, nn.y + 1 - sz,
+					n2.x + 1, nn.y + sz,
+					xroad);
+			}
+			// Fill vertical road.
+			n2 = nn.link1;
+			sz = nn.size1 - amt;
+			if (sz > 0) {
+				setRect(
+					nn.x + 1 - sz, nn.y,
+					nn.x + sz, n2.y + 1,
+					yroad);
+			}
+		});
+	}
+	fillRoads(this.intersections, 0, T_SIDE, T_SIDE);
+	fillRoads(this.intersections, 1, T_RHORI, T_RVERT);
 	_.forEach(this.intersections, function(nn) {
-		var n2, sz;
-		// Fill horizontal road.
-		n2 = nn.link0;
-		sz = nn.size0;
-		if (sz > 0) {
-			setRect(
-				nn.x + 1, nn.y + 1 - sz,
-				n2.x, nn.y + sz,
-				T_RHORI);
-		}
-		// Fill vertical road.
-		n2 = nn.link1; sz = nn.size1;
-		if (sz > 0) {
-			setRect(
-				nn.x + 1 - sz, nn.y + 1,
-				nn.x + sz, n2.y,
-				T_RVERT);
-		}
-	});
-	_.forEach(this.intersections, function(nn) {
-		var sx = Math.max(nn.size1, nn.size3);
-		var sy = Math.max(nn.size0, nn.size2);
-		if (sx && sy) {
+		var sx = Math.max(nn.size1, nn.size3) - 1;
+		var sy = Math.max(nn.size0, nn.size2) - 1;
+		if (sx > 0 && sy > 0) {
 			setRect(
 				nn.x + 1 - sx, nn.y + 1 - sy,
 				nn.x + sx, nn.y + sy,
