@@ -11,7 +11,6 @@ function HUD(width, height) {
 	this.canvas.height = height;
 	this.cxt = this.canvas.getContext('2d');
 	this.cxt.font = 'bold 24px sans';
-	this.cxt.fillStyle = 'rgba(255, 255, 255, 0.75)';
 }
 
 HUD.prototype.clear = function() {
