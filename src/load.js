@@ -174,6 +174,27 @@ function getSfx(name) {
 }
 
 // =====================================================================
+// Sound effects
+// =====================================================================
+
+// Sound effects
+var music = {};
+
+function initMusic(path_map, func) {
+	_.forOwn(path_map.music, function(paths, name) {
+		music[name] = _.collect(paths, function(path) {
+			return 'assets/music/' + path;
+		});
+	});
+	func();
+	console.log(music);
+}
+
+function getMusic(name) {
+	return new Howl({urls: music[name]});
+}
+
+// =====================================================================
 // Video
 // =====================================================================
 
@@ -211,7 +232,7 @@ function getVideo(name) {
 
 // Preload all resources, call func when finished.
 function init(path_map, func) {
-	var rem = 5;
+	var rem = 6;
 	function finish() {
 		rem--;
 		if (!rem) {
@@ -222,6 +243,7 @@ function init(path_map, func) {
 	initTextures(path_map, finish);
 	initHud(path_map, finish);
 	initSfx(path_map, finish);
+	initMusic(path_map, finish);
 	initVideo(path_map, finish);
 }
 
@@ -232,5 +254,6 @@ module.exports = {
 	getTexture: getTexture,
 	getHudImage: getHudImage,
 	getSfx: getSfx,
+	getMusic: getMusic,
 	getVideo: getVideo,
 };

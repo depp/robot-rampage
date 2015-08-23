@@ -45,6 +45,7 @@ class App(object):
         path_map = {}
         self.build_models(path_map)
         self.build_av(path_map, 'sfx', ['.ogg', '.m4a'])
+        self.build_av(path_map, 'music', ['.ogg', '.m4a'])
         self.build_av(path_map, 'video', ['.mp4', '.webm'])
         self.build_images(path_map, 'images')
         self.build_images(path_map, 'hud')
