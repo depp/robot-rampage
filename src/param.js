@@ -64,8 +64,8 @@ module.exports = {
 	// City generation parameters.
 	CITY: {
 		// City size.
-		width: 50,
-		height: 50,
+		width: 150,
+		height: 150,
 		// Range of sizes for city areas subdivided with roads of the given size.
 		// Minimum distance between roads of the given size.
 		subdivide: [

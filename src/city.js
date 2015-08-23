@@ -320,58 +320,91 @@ City.prototype.logTiles = function() {
 	console.log(lines.join('\n'));
 };
 
+// Divide a line into the given number of chunks.
+// Returns the chunk boundaries, including x0 and x1.
+function divideLine(x0, x1, chunkMax) {
+	var sz = x1 - x0;
+	var nchunks = Math.ceil(sz / chunkMax);
+	var i, arr = [x0];
+	for (i = 1; i < nchunks; i++) {
+		arr.push(x0 + Math.round(sz * i / nchunks));
+	}
+	arr.push(x1);
+	return arr;
+}
+
 // Create geometry for the road network.
 City.prototype._createGeometry = function() {
-	var h = this.y1 - this.y0, w = this.x1 - this.y0;
-	var area = w * h, i, x, y;
-
-	var index = new Int16Array(area * 6);
-	for (i = 0; i < area; i++) {
-		index.set([i*4+0, i*4+1, i*4+2, i*4+2, i*4+1, i*4+3], i*6);
-	}
-
-	var pos = new Float32Array(area * 12);
-	for (x = 0; x < w; x++) {
-		for (y = 0; y < h; y++) {
-			pos.set([
-				x, y, 0,
-				x + 1, y, 0,
-				x, y + 1, 0,
-				x + 1, y + 1, 0
-			], (x * h + y) * 12);
-		}
-	}
-
+	var MAX_CHUNK = 32;
+	var mh = this.y1 - this.y0, mw = this.x1 - this.y0;
+	var xchunks = divideLine(this.x0, this.x1, MAX_CHUNK), xi;
+	var ychunks = divideLine(this.y0, this.y1, MAX_CHUNK), yi;
 	var tiles = this.getTiles();
-	var uv = new Float32Array(area * 8), j;
-	for (i = 0; i < area; i++) {
-		var tile = tiles[i];
-		for (j = 0; j < 8; j++) {
-			uv[i*8+j] = T_UV[tile*8+j];
+
+	for (xi = 0; xi < xchunks.length; xi++) {
+		var x0 = xchunks[xi], x1 = xchunks[xi+1];
+		var cw = x1 - x0, mx0 = x0 - this.x0;
+		for (yi = 0; yi < xchunks.length; yi++) {
+			var y0 = ychunks[yi], y1 = ychunks[yi+1];
+			var ch = y1 - y0, my0 = y0 - this.y0;
+			var area = cw * ch, ci, mi, x, y;
+
+			var index = new Int16Array(area * 6);
+			for (ci = 0; ci < area; ci++) {
+				index.set([
+					ci*4+0, ci*4+1, ci*4+2,
+					ci*4+2, ci*4+1, ci*4+3,
+				], ci*6);
+			}
+
+			var pos = new Float32Array(area * 12);
+			for (x = 0; x < cw; x++) {
+				for (y = 0; y < ch; y++) {
+					ci = x * ch + y;
+					pos.set([
+						x, y, 0,
+						x + 1, y, 0,
+						x, y + 1, 0,
+						x + 1, y + 1, 0
+					], ci * 12);
+				}
+			}
+
+			var uv = new Float32Array(area * 8), j;
+			for (x = 0; x < cw; x++) {
+				for (y = 0; y < ch; y++) {
+					mi = (x + mx0) * mw + y + my0;
+					ci = x * cw + y;
+					var tile = tiles[mi];
+					for (j = 0; j < 8; j++) {
+						uv[ci*8+j] = T_UV[tile*8+j];
+					}
+				}
+			}
+
+			var normal = new Float32Array(area * 12);
+			for (ci = 0; ci < area * 12; ci++) {
+				normal[ci*3+0] = 0;
+				normal[ci*3+1] = 0;
+				normal[ci*3+2] = 1;
+			}
+
+			var geometry = new THREE.BufferGeometry();
+			geometry.addAttribute(
+				'index', new THREE.BufferAttribute(index, 1));
+			geometry.addAttribute(
+				'position', new THREE.BufferAttribute(pos, 3));
+			geometry.addAttribute(
+				'uv', new THREE.BufferAttribute(uv, 2));
+			geometry.addAttribute(
+				'normal', new THREE.BufferAttribute(normal, 3));
+
+			this.geometry.push(geometry);
+			var obj = new THREE.Mesh(geometry, this.material);
+			obj.position.set(x0, y0, 0);
+			this.obj.add(obj);
 		}
 	}
-
-	var normal = new Float32Array(area * 12);
-	for (i = 0; i < area * 12; i++) {
-		normal[i*3+0] = 0;
-		normal[i*3+1] = 0;
-		normal[i*3+2] = 1;
-	}
-
-	var geometry = new THREE.BufferGeometry();
-	geometry.addAttribute(
-		'index', new THREE.BufferAttribute(index, 1));
-	geometry.addAttribute(
-		'position', new THREE.BufferAttribute(pos, 3));
-	geometry.addAttribute(
-		'uv', new THREE.BufferAttribute(uv, 2));
-	geometry.addAttribute(
-		'normal', new THREE.BufferAttribute(normal, 3));
-
-	this.geometry.push(geometry);
-	var obj = new THREE.Mesh(geometry, this.material);
-	obj.position.set(this.x0, this.y0, 0);
-	this.obj.add(obj);
 };
 
 module.exports = {
