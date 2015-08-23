@@ -143,7 +143,61 @@ function City() {
 	this.explosionLight = new light.Light();
 	this.obj.add(this.explosionLight.obj);
 	this.propertyDamage = 0;
+
+	this.genSpawns();
 }
+
+City.prototype.getBigIntersections = function() {
+	var points = [];
+	_.forEach(this.intersections, function(nn) {
+		var sy = Math.max(nn.size0, nn.size2);
+		var sx = Math.max(nn.size1, nn.size3);
+		if (sy >= 2 && sx >= 2 && sx + sy >= 5) {
+			points.push({x:nn.x, y:nn.y});
+		}
+	});
+	return points;
+};
+
+City.prototype.genSpawns = function() {
+	var points = this.getBigIntersections();
+	var spawns = [];
+	var best = {x:0, y:0}, bestD = Infinity;
+	_.forEach(points, function(p) {
+		var d = p.x * p.x + p.y * p.y;
+		if (d < bestD) {
+			best = p;
+			bestD = d;
+		}
+	});
+	this.playerStart = best;
+	spawns.push(best);
+	for (var i = 0; i < 10; i++) {
+		bestD = 0;
+		best = {x:0, y:0};
+		for (var j = 0; j < points.length; j++) {
+			var p = points[j];
+			var minD = Infinity;
+			for (var k = 0; k < spawns.length; k++) {
+				var q = spawns[k];
+				var dx = q.x - p.x, dy = q.y - p.y;
+				var d2 = dx * dx + dy * dy;
+				if (d2 < minD) {
+					minD = d2;
+					if (minD < bestD) {
+						break;
+					}
+				}
+			}
+			if (minD > bestD) {
+				best = p;
+				bestD = minD;
+			}
+		}
+		spawns.push(best);
+	}
+	console.log(spawns);
+};
 
 var GROUND = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
 
