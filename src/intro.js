@@ -8,7 +8,10 @@
 var load = require('./load');
 
 function Intro(width, height) {
-	var e = document.createElement('video');
+	var e;
+	var ce = document.createElement('div');
+	ce.className = 'videoLayer';
+	e = document.createElement('video');
 	e.controls = true;
 	_.forEach(load.getVideo('intro'), function(src) {
 		var se = document.createElement('source');
@@ -16,9 +19,17 @@ function Intro(width, height) {
 		se.src = src.uri;
 		e.appendChild(se);
 	});
-	var ce = document.createElement('div');
-	ce.className = 'videoLayer';
 	ce.appendChild(e);
+	e = document.createElement('p');
+	var a = document.createElement('a');
+	a.className = 'button';
+	a.appendChild(document.createTextNode('Play Game >>>'));
+	a.onclick = function() {
+		console.log('CLICK');
+	};
+	e.appendChild(a);
+	ce.appendChild(e);
+	console.log(ce);
 	document.getElementById('game').appendChild(ce);
 }
 
