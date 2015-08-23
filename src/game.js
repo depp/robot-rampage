@@ -48,6 +48,7 @@ function Game(width, height) {
 // Advance world by one frame.
 Game.prototype.update = function() {
 	this.robot.update(this);
+	this.city.update(this);
 	this.particles.update();
 	this.camera.update();
 };

@@ -8,6 +8,7 @@
 var param = require('./param');
 var load = require('./load');
 var building = require('./building');
+var particles = require('./particles');
 
 // Class for a city block.
 function Block(x0, y0, x1, y1, n0, n1, n2, n3) {
@@ -135,6 +136,8 @@ function City() {
 		this.blockGroup.add(grp.obj);
 		return grp;
 	}, this);
+	// List of pending explosions.
+	this.pendingExplosions = [];
 }
 
 var GROUND = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
@@ -149,9 +152,7 @@ City.prototype.raycast = function(ray) {
 	var origin = ray.origin;
 	var terminus = (new THREE.Vector3()).copy(ray.direction)
 			.multiplyScalar(15).add(origin);
-	// console.log(origin, ray.terminus);
 	var bbox = (new THREE.Box3()).setFromPoints([origin, terminus]);
-	// console.log(bbox);
 	var blocks = [];
 	_.forEach(this.bldBlocks, function(block) {
 		if (!bbox.isIntersectionBox(block.bbox)) {
@@ -216,12 +217,12 @@ City.prototype.damage = function(center, size, amt) {
 			var dist = center.distanceTo(binfo.bbox.center(vec));
 			var bsz = binfo.bbox.min.distanceTo(binfo.bbox.max) / 2;
 			if (dist < size + bsz) {
-				// console.log('destroy');
+				this.pendingExplosions.push(binfo.bbox);
 				binfo.obj.parent.remove(binfo.obj);
 				binfo.obj = null;
 				destroyed = true;
 			}
-		});
+		}, this);
 		if (destroyed) {
 			var end = block.binfos.length;
 			for (var i = end - 1; i >= 0; i--) {
@@ -232,7 +233,16 @@ City.prototype.damage = function(center, size, amt) {
 			}
 			block.binfos.splice(end, block.binfos.length - end);
 		}
-	});
+	}, this);
+};
+
+// Advance world by one frame.
+City.prototype.update = function(game) {
+	if (this.pendingExplosions.length > 0) {
+		game.particles.add(new particles.Explosion(
+			this.pendingExplosions, {}));
+		this.pendingExplosions = [];
+	}
 };
 
 // Subdivide an area of the road network with roads.
