@@ -9,6 +9,8 @@ var param = require('./param');
 var load = require('./load');
 var building = require('./building');
 var particles = require('./particles');
+var light = require('./light');
+var util = require('./util');
 
 // Class for a city block.
 function Block(x0, y0, x1, y1, n0, n1, n2, n3) {
@@ -138,6 +140,8 @@ function City() {
 	}, this);
 	// List of pending explosions.
 	this.pendingExplosions = [];
+	this.explosionLight = new light.Light();
+	this.obj.add(this.explosionLight.obj);
 }
 
 var GROUND = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
@@ -238,9 +242,22 @@ City.prototype.damage = function(center, size, amt) {
 
 // Advance world by one frame.
 City.prototype.update = function(game) {
+	this.explosionLight.update();
 	if (this.pendingExplosions.length > 0) {
 		game.particles.add(new particles.Explosion(
 			this.pendingExplosions, {}));
+		var px = 0, py = 0, pz = 0, tw = 0, w, box, i;
+		for (i = 0; i < this.pendingExplosions.length; i++) {
+			box = this.pendingExplosions[i];
+			w = util.boxVolume(box);
+			px += w * 0.5 * (box.min.x + box.max.x);
+			py += w * 0.5 * (box.min.y + box.max.y);
+			pz += w * 0.5 * (box.min.z + box.max.z);
+			tw += w;
+		}
+		var a = 1 / tw;
+		this.explosionLight.obj.position.set(a*px, a*py, a*pz);
+		this.explosionLight.flash(param.EXPLOSION_LIGHT);
 		this.pendingExplosions = [];
 	}
 };

@@ -7,6 +7,7 @@
 
 var load = require('./load');
 var param = require('./param');
+var util = require('./util');
 
 function ParticleSystem() {
 	this.obj = new THREE.Group();
@@ -87,12 +88,6 @@ Beam.prototype.draw = function(dt) {
 	attr.needsUpdate = true;
 };
 
-function boxVolume(box) {
-	return (box.max.x - box.min.x) *
-		(box.max.y - box.min.y) *
-		(box.max.z - box.min.z);
-};
-
 // Explosion particle cloud class.
 function Explosion(boxes, param) {
 	var density = param.density || 10;
@@ -103,7 +98,7 @@ function Explosion(boxes, param) {
 
 	var counts = _.collect(boxes, function(box) {
 		return Math.max(
-			Math.round(density * boxVolume(box)), 1);
+			Math.round(density * util.boxVolume(box)), 1);
 	});
 	var count = _.sum(counts);
 

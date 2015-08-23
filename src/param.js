@@ -73,6 +73,13 @@ module.exports = {
 			},
 		},
 	},
+	// Explosion lighting.
+	EXPLOSION_LIGHT: {
+		color: 0xffc000,
+		time: 0.5,
+		intensity: 2.0,
+		distance: 12,
+	},
 	// City generation parameters.
 	CITY: {
 		// City size.

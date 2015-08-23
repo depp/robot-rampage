@@ -36,8 +36,15 @@ function angleDiff(a, b) {
 	return c;
 }
 
+function boxVolume(box) {
+	return (box.max.x - box.min.x) *
+		(box.max.y - box.min.y) *
+		(box.max.z - box.min.z);
+}
+
 module.exports = {
 	angleSub: angleSub,
 	angleAdd: angleAdd,
 	angleDiff: angleDiff,
+	boxVolume: boxVolume,
 };
