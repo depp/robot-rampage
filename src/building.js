@@ -309,7 +309,7 @@ function BuildingGroup(x0, y0, x1, y1) {
 				case 0: mesh.position.set(bx - ox,      by - oy,      0); break;
 				case 1: mesh.position.set(bx + oy + sy, by - ox,      0); break;
 				case 2: mesh.position.set(bx + ox + sx, by + oy + sy, 0); break;
-				case 3: mesh.position.set(bx - oy,      by + oy + sy, 0); break;
+				case 3: mesh.position.set(bx - oy,      by + ox + sx, 0); break;
 				}
 				mesh.rotation.set(0, 0, dir * (Math.PI / 2), 'XYZ');
 				group.obj.add(mesh);

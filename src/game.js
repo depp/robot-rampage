@@ -7,6 +7,7 @@
 
 var robot = require('./robot');
 var city = require('./city');
+var building = require('./building');
 
 // Game state class.
 function Game(width, height) {
@@ -30,11 +31,15 @@ function Game(width, height) {
 	this.scene.add(light);
 
 	this.robot = new robot.Robot();
-	this.scene.add(this.robot.obj);
+	// this.scene.add(this.robot.obj);
 
+	/*
 	var citySeg = new city.CitySegment(null, 32, 32);
 	citySeg.obj.position.set(-16, -16, 0);
 	this.scene.add(citySeg.obj);
+	*/
+	var block = new building.BuildingGroup(0, 0, 4, 4);
+	this.scene.add(block.obj);
 }
 
 // Advance world by one frame.
