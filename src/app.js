@@ -42,7 +42,7 @@ function init2(container) {
 
 	camera = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 0.1, 100);
 	camera.setLens(45);
-	camera.position.set(8, 8, 8);
+	camera.position.set(0, -16, 16);
 	camera.up.set(0, 0, 1);
 	camera.lookAt(new THREE.Vector3(0, 0, 2.5));
 
@@ -51,6 +51,9 @@ function init2(container) {
 	scene.add(light);
 	light = new THREE.PointLight(0xffafaf);
 	light.position.set(10, 0, 10);
+	scene.add(light);
+	light = new THREE.PointLight(0x3fff3f);
+	light.position.set(-10, -10, 10);
 	scene.add(light);
 
 	var loader = new THREE.JSONLoader();
