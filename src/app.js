@@ -8,62 +8,31 @@
 var load = require('./load');
 var input = require('./input');
 var param = require('./param');
-var robot = require('./robot');
-var building = require('./building');
+var game = require('./game');
 
 // The requestAnimationFrame handle.
-var handle = null;
+var handle;
 // The three.js renderer.
 var renderer;
-// The three.js scene.
-var scene;
-// The three.js camera.
-var camera;
-// The three.js controls.
-var controls;
 // Timestamp of the last physics update.
 var updateTime;
-
-// The robot, a robot.Robot.
-var robotObj;
+// The state of the current game.
+var gameState;
 
 function init(path_map, container) {
-	load.init(path_map, function() { init2(container); });
+	load.init(path_map, function() {
+		var WIDTH = 800, HEIGHT = 450;
+
+		renderer = new THREE.WebGLRenderer();
+		renderer.setSize(WIDTH, HEIGHT);
+		container.appendChild(renderer.domElement);
+		gameState = new game.Game(WIDTH, HEIGHT);
+		input.init();
+		start();
+	});
 }
 
-function init2(container) {
-	var WIDTH = 800, HEIGHT = 450;
-
-	renderer = new THREE.WebGLRenderer();
-	renderer.setSize(WIDTH, HEIGHT);
-	container.appendChild(renderer.domElement);
-
-	scene = new THREE.Scene();
-
-	camera = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 0.1, 100);
-	camera.setLens(45);
-	camera.position.set(0, -16, 16);
-	camera.up.set(0, 0, 1);
-	camera.lookAt(new THREE.Vector3(0, 0, 2.5));
-
-	var light = new THREE.PointLight(0xafafff);
-	light.position.set(0, 10, 10);
-	scene.add(light);
-	light = new THREE.PointLight(0xffafaf);
-	light.position.set(10, 0, 10);
-	scene.add(light);
-	light = new THREE.PointLight(0x3fff3f);
-	light.position.set(-10, -10, 10);
-	scene.add(light);
-
-	var loader = new THREE.JSONLoader();
-	robotObj = new robot.Robot();
-	scene.add(robotObj.obj);
-
-	input.init();
-	start();
-}
-
+// Start the main game loop.
 function start() {
 	if (handle) {
 		return;
@@ -72,6 +41,7 @@ function start() {
 	handle = window.requestAnimationFrame(render);
 }
 
+// Stop the main game loop.
 function stop() {
 	if (!handle) {
 		return;
@@ -80,6 +50,7 @@ function stop() {
 	handle = null;
 }
 
+// Draw the game state, updating it if necessary.
 function render(time) {
 	var dt = param.DT * 1e3, rate = param.RATE * 1e-3;
 	handle = window.requestAnimationFrame(render);
@@ -97,11 +68,10 @@ function render(time) {
 		}
 	}
 	for (i = 0; i < updateCount; i++) {
-		robotObj.update();
+		gameState.update();
 	}
 	var frac = (time - updateTime) * rate;
-	robotObj.draw(frac);
-	renderer.render(scene, camera);
+	gameState.draw(renderer, frac);
 }
 
 window.Game = {

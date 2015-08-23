@@ -70,7 +70,8 @@ function angleDiff(a, b) {
 	return c;
 }
 
-Robot.prototype.update = function() {
+// Advance world by one frame.
+Robot.prototype.update = function(game) {
 	this.x0 = this.x1;
 	this.y0 = this.y1;
 	this.a0 = this.a1;
@@ -180,6 +181,7 @@ Robot.prototype.update = function() {
 	}).call(this);
 };
 
+// Update graphics.
 Robot.prototype.draw = function(frac) {
 	this.obj.position.set(
 		this.x0 + (this.x1 - this.x0) * frac,
