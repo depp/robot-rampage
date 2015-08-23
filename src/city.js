@@ -137,20 +137,27 @@ function City() {
 	}, this);
 }
 
+var GROUND = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+
 // Test intersection with the city geometry.
+// Returns structure with 'end' and 'hit' parameters.
+// The 'hit' parameter is null, "ground", or "building".
+// The 'end' parameter is the end of the ray.
 City.prototype.raycast = function(ray) {
+	var point, dist;
+	var hit = new THREE.Vector3();
 	var origin = ray.origin;
 	var terminus = (new THREE.Vector3()).copy(ray.direction)
 			.multiplyScalar(15).add(origin);
-	console.log(origin, ray.terminus);
+	// console.log(origin, ray.terminus);
 	var bbox = (new THREE.Box3()).setFromPoints([origin, terminus]);
-	console.log(bbox);
+	// console.log(bbox);
 	var blocks = [];
 	_.forEach(this.bldBlocks, function(block) {
 		if (!bbox.isIntersectionBox(block.bbox)) {
 			return;
 		}
-		var point = ray.intersectBox(block.bbox);
+		var point = ray.intersectBox(block.bbox, hit);
 		if (!point) {
 			return;
 		}
@@ -160,8 +167,40 @@ City.prototype.raycast = function(ray) {
 			dist: point.dot(ray.direction),
 		});
 	});
-	blocks.sort(function(a, b) { return a.dist - b.dist; });
-	console.log(blocks);
+	var bestDistance = terminus.dot(ray.direction);
+	var hitType = null;
+	if (blocks.length) {
+		blocks.sort(function(a, b) { return a.dist - b.dist; });
+		var i;
+		for (i = 0; i < blocks.length && hitType != 'building'; i++) {
+			var binfos = blocks[i].block.binfos, j;
+			for (j = 0; j < binfos.length; j++) {
+				var binfo = binfos[j];
+				point = ray.intersectBox(binfo.bbox, hit);
+				if (!point) {
+					continue;
+				}
+				dist = point.dot(ray.direction);
+				if (dist < bestDistance) {
+					terminus.copy(point);
+					bestDistance = dist;
+					hitType = 'building';
+				}
+			}
+		}
+	}
+	if (!hitType) {
+		point = ray.intersectPlane(GROUND, hit);
+		if (point) {
+			dist = point.dot(ray.direction);
+			if (dist < bestDistance) {
+				terminus.copy(point);
+				bestDistance = dist;
+				hitType = 'ground';
+			}
+		}
+	}
+	return {hit: hitType, end: terminus};
 };
 
 // Subdivide an area of the road network with roads.

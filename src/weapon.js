@@ -43,10 +43,11 @@ function laserTrace(game, robot, angleX, angleY, wstat) {
 			.multiplyScalar(rstat.scale)
 			.add(new THREE.Vector3(robot.x1, robot.y1, 0));
 	var ray = new THREE.Ray(v1, dir);
-	game.city.raycast(ray);
-	var v2 = dir.multiplyScalar(20).add(v1);
+	var hit = game.city.raycast(ray);
+	// console.log(hit);
+	// var v2 = dir.multiplyScalar(20).add(v1);
 	return {
-		pos1: v1, pos2: v2,
+		pos1: v1, pos2: hit.end,
 		vel1: robot.velocity,
 		vel2: new THREE.Vector3(0, 0, 0)
 	};
@@ -56,7 +57,7 @@ function WeaponState() {
 	this.cooldown = 0;
 	this.warmup = 0;
 	this.latched = false;
-	this.update = true ? this.updateLaser : this.updateTriple;
+	this.update = false ? this.updateLaser : this.updateTriple;
 	this.light = new THREE.PointLight(0xffffff);
 	this.light.position.set(0, 4, 2.5);
 	this.light.distance = 15;
