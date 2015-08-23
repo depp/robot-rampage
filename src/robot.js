@@ -10,8 +10,8 @@ var load = require('./load');
 var robotMaterial = new THREE.MeshPhongMaterial({color: 0x667788});
 
 // Create a part of the robot.
-function createPart(name) {
-	var geometry = load.getModel('robot-' + name);
+function createPart(name, flipped) {
+	var geometry = load.getModel('robot-' + name, flipped);
 	if (!geometry) {
 		return null;
 	}
@@ -22,8 +22,8 @@ function createPart(name) {
 // Robot class.
 function Robot() {
 	this.obj = new THREE.Group();
-	this.mArms = [createPart('arm'), createPart('arm-flip', true)];
-	this.mLegs = [createPart('leg'), createPart('leg-flip', true)];
+	this.mArms = [createPart('arm'), createPart('arm', true)];
+	this.mLegs = [createPart('leg'), createPart('leg', true)];
 	this.mHead = createPart('head');
 	this.mTorso = createPart('torso');
 	_.forEach(
@@ -33,5 +33,5 @@ function Robot() {
 }
 
 module.exports = {
-	Robot: Robot
+	Robot: Robot,
 };

@@ -7,6 +7,7 @@
 
 var load = require('./load');
 var robot = require('./robot');
+var building = require('./building');
 
 // The requestAnimationFrame handle.
 var handle = null;
@@ -47,7 +48,11 @@ function init2(container) {
 
 	var loader = new THREE.JSONLoader();
 	var robotObj = new robot.Robot();
-	scene.add(robotObj.obj);
+	// scene.add(robotObj.obj);
+
+	var bld = new building.BuildingGroup(7, 7);
+	bld.obj.position.set(-6, -6, 0);
+	scene.add(bld.obj);
 
 	start();
 }
@@ -75,5 +80,5 @@ function render(time) {
 window.Game = {
 	init: init,
 	start: start,
-	stop: stop
+	stop: stop,
 };

@@ -11,11 +11,11 @@ var models = {};
 var FLIP_MODELS = {'robot-arm':true, 'robot-leg':true};
 // Test if a model needs to get flipped.
 function modelNeedsFlip(name) {
-	return !!FLIP_MODELS[name];
+	return !!FLIP_MODELS[name] || /^bld_/.match(name);
 }
 
 // Flatten faces in geometry.
-function flattenGeometry(g, flip) {
+function flattenGeometry(g, name, flip) {
 	var xsc = flip ? -1 : +1;
 	var ng = new THREE.Geometry();
 	var i, vert = g.vertices;
@@ -35,6 +35,8 @@ function flattenGeometry(g, flip) {
 	ng.computeVertexNormals();
 	var bg = new THREE.BufferGeometry();
 	bg.fromGeometry(ng);
+	bg.computeBoundingBox();
+	bg.name = name;
 	return bg;
 }
 
@@ -52,9 +54,10 @@ function init_models(path_map, func) {
 		loader.load(
 			'assets/models/' + path + '.json',
 			function(geometry, materials) {
-				models[name] = flattenGeometry(geometry);
+				models[name] = flattenGeometry(geometry, name, false);
 				if (modelNeedsFlip) {
-					models[name + '-flip'] = flattenGeometry(geometry, true);
+					var fname = name + '@flip';
+					models[fname] = flattenGeometry(geometry, fname, true);
 				}
 				modelLoaded++;
 				if (modelLoaded == modelCount) {
@@ -73,19 +76,28 @@ function init(path_map, func) {
 function getModel(name, flipped) {
 	var key = name;
 	if (flipped) {
-		key += '1';
-	} else {
-		key += '0';
+		key += '@flip';
 	}
-	var value = models[name];
+	var value = models[key];
 	if (typeof value !== 'object') {
-		console.error('Unknown model: ' + name);
+		console.error('Unknown model: ' + key);
 		return null;
 	}
 	return value;
 }
 
+// Call function for each model, passing the model and its name.
+function forModels(func, thisArg) {
+	_.forOwn(models, function(model, name) {
+		if (/@flip$/.test(name)) {
+			return;
+		}
+		func.call(thisArg, model, name);
+	});
+}
+
 module.exports = {
 	init: init,
-	getModel: getModel
+	getModel: getModel,
+	forModels: forModels,
 };
