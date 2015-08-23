@@ -10,12 +10,22 @@ var load = require('./load');
 var particles = require('./particles');
 var util = require('./util');
 
-var LASER_BEAM = {
-	spread: 0.1,
+var BEAM_BASE = {
 	speed: 0.25,
-	density: 74,
-	time: 0.75,
+	density: 75,
 };
+var LASER_BEAM = _.assign({
+	time: 0.75,
+	size: 1.5,
+	spread: 0.1,
+	texture: 'green-pulse',
+}, BEAM_BASE);
+var TRIPLE_BEAM = _.assign({
+	time: 0.3,
+	size: 1.0,
+	spread: 0.08,
+	texture: 'red-pulse',
+}, BEAM_BASE);
 
 // Calculate a laser trace {v1, v2}.
 function laserTrace(robot, angleX, angleY, wstat) {
@@ -33,14 +43,18 @@ function laserTrace(robot, angleX, angleY, wstat) {
 			.multiplyScalar(rstat.scale)
 			.add(new THREE.Vector3(robot.x1, robot.y1, 0));
 	var v2 = dir.multiplyScalar(10).add(v1);
-	return {v1: v1, v2: v2};
+	return {
+		pos1: v1, pos2: v2,
+		vel1: robot.velocity,
+		vel2: new THREE.Vector3(0, 0, 0)
+	};
 }
 
 function WeaponState() {
 	this.cooldown = 0;
 	this.warmup = 0;
 	this.latched = false;
-	this.update = false ? this.updateLaser : this.updateTriple;
+	this.update = true ? this.updateLaser : this.updateTriple;
 	this.light = new THREE.PointLight(0xffffff);
 	this.light.position.set(0, 4, 2.5);
 	this.light.distance = 15;
@@ -60,7 +74,6 @@ WeaponState.prototype.flashLight = function(light) {
 
 // Fire a laser beam from the robot.
 WeaponState.prototype.fireLaser = function(game, robot, traces) {
-	game.particles.add(new particles.Beam(traces, LASER_BEAM));
 };
 
 // Common update function.
@@ -86,7 +99,7 @@ WeaponState.prototype.updateLaser = function(game, robot, action) {
 		this.latched = true;
 		this.cooldown = wstat.cooldown;
 		load.getSfx('shoot').play();
-		this.fireLaser(game, robot, [trace]);
+		game.particles.add(new particles.Beam([trace], LASER_BEAM));
 		this.flashLight(wstat.light);
 	}
 };
@@ -103,7 +116,7 @@ WeaponState.prototype.updateTriple = function(game, robot, action) {
 		];
 		this.cooldown = wstat.cooldown;
 		load.getSfx('shoot').play();
-		this.fireLaser(game, robot, traces);
+		game.particles.add(new particles.Beam(traces, TRIPLE_BEAM));
 		this.flashLight(wstat.light);
 	}
 };

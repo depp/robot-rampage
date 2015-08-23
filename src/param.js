@@ -53,7 +53,7 @@ module.exports = {
 			spreadY: 0.1,
 			angleY: 0.15,
 			light: {
-				color: 0xff4010,
+				color: 0x10ff40,
 				time: 0.4,
 				intensity: 1.0,
 				distance: 10,

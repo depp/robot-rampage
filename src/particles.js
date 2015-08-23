@@ -27,18 +27,19 @@ function Beam(traces, param) {
 	var density = param.density || 100;
 	var spread = param.spread || 1.0;
 	var speed = param.speed || 1.0;
-	var texture = param.texture || 'read-pulse';
+	var texture = param.texture || 'red-pulse';
 	var time = param.time || 1.0;
 
 	var counts = _.collect(traces, function(trace) {
-		return Math.max(Math.round(density * trace.v1.distanceTo(trace.v2)), 1);
+		return Math.max(
+			Math.round(density * trace.pos1.distanceTo(trace.pos2)), 1);
 	});
 	var count = _.sum(counts);
 
 	this.material = new THREE.PointCloudMaterial({
 		color: 0xffffffff,
-		size: 1.5,
-		map: load.getTexture('red-pulse'),
+		size: param.size || 1.5,
+		map: load.getTexture(texture),
 		transparent: true,
 		blending: THREE.AdditiveBlending,
 		depthWrite: false,
@@ -49,19 +50,20 @@ function Beam(traces, param) {
 	this.velocity = velocity;
 	var i = 0;
 	_.forEach(traces, function(trace, idx) {
-		var v1 = trace.v1, v2 = trace.v2;
+		var p1 = trace.pos1, p2 = trace.pos2;
+		var v1 = trace.vel1, v2 = trace.vel2;
 		var j = i, e = i + counts[idx];
 		for (; j < e; j++) {
 			var frac = Math.random();
 			vertex.set([
-				v1.x + (v2.x - v1.x) * frac + (Math.random() * 2 - 1) * spread,
-				v1.y + (v2.y - v1.y) * frac + (Math.random() * 2 - 1) * spread,
-				v1.z + (v2.z - v1.z) * frac + (Math.random() * 2 - 1) * spread,
+				p1.x + (p2.x - p1.x) * frac + (Math.random() * 2 - 1) * spread,
+				p1.y + (p2.y - p1.y) * frac + (Math.random() * 2 - 1) * spread,
+				p1.z + (p2.z - p1.z) * frac + (Math.random() * 2 - 1) * spread,
 			], j * 3);
 			velocity.set([
-				(Math.random() * 2 - 1) * speed,
-				(Math.random() * 2 - 1) * speed,
-				(Math.random() * 2 - 1) * speed,
+				(Math.random() * 2 - 1) * speed + v1.x + frac * (v2.x - v1.x),
+				(Math.random() * 2 - 1) * speed + v1.y + frac * (v2.y - v1.y),
+				(Math.random() * 2 - 1) * speed + v1.z + frac * (v2.z - v1.z),
 			], j * 3);
 		}
 		i = e;
