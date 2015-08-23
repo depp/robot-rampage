@@ -9,6 +9,13 @@ var load = require('./load');
 var input = require('./input');
 var param = require('./param');
 var weapon = require('./weapon');
+var util = require('./util');
+
+var STATS = {
+	scale: 0.5,
+	weaponHeight: 4.4,
+	weaponRadius: 1.0,
+};
 
 var robotMaterial = new THREE.MeshPhongMaterial({color: 0x667788});
 
@@ -24,9 +31,9 @@ function createPart(name, flipped) {
 
 // Robot class.
 function Robot() {
-	var scale = 0.5;
+	this.stats = STATS;
 	this.obj = new THREE.Group();
-	this.obj.scale.set(scale, scale, scale);
+	this.obj.scale.set(STATS.scale, STATS.scale, STATS.scale);
 	this.mArms = [createPart('arm'), createPart('arm', true)];
 	this.mLegs = [createPart('leg'), createPart('leg', true)];
 	this.mHead = createPart('head');
@@ -41,37 +48,6 @@ function Robot() {
 	this.a0 = this.a1 = Math.PI / 2;
 	this.speed = 0;
 	this.weapon = new weapon.WeaponState();
-}
-
-// Compute the angle a - b, in the range [-pi, +pi].
-function angleSub(a, b) {
-	var c = a - b;
-	if (c > Math.PI) {
-		c -= 2 * Math.PI;
-	} else if (c < -Math.PI) {
-		c += 2 * Math.PI;
-	}
-	return c;
-}
-
-// Compute the angle a + b
-function angleAdd(a, b) {
-	var c = a + b;
-	if (c > Math.PI) {
-		c -= 2 * Math.PI;
-	} else if (c < -Math.PI) {
-		c += 2 * Math.PI;
-	}
-	return c;
-}
-
-// Compute the angle |a - b|, in the range [0, pi].
-function angleDiff(a, b) {
-	var c = Math.abs(a - b);
-	if (c > Math.PI) {
-		c = 2 * Math.PI - c;
-	}
-	return c;
 }
 
 // Advance world by one frame.
@@ -98,7 +74,7 @@ Robot.prototype.update = function(game) {
 			var ctlAngle = Math.atan2(ctl.y, ctl.x);
 
 			// Magnitude of difference between facing and control angles.
-			var relAngleMag = angleDiff(this.a1, ctlAngle);
+			var relAngleMag = util.angleDiff(this.a1, ctlAngle);
 
 			// Range of angles considered "forward" and "backward".
 			var fwdAngle = stat.forwardAngle;
@@ -122,17 +98,18 @@ Robot.prototype.update = function(game) {
 				targetSpeed = 0;
 			} else {
 				// Move backward
-				targetAngle = angleAdd(ctlAngle, Math.PI);
+				targetAngle = util.angleAdd(ctlAngle, Math.PI);
 				targetSpeed = -ctlMag * stat.backSpeed;
 			}
 
 			// Update the angle.
-			var deltaAngle = angleSub(targetAngle, this.a1);
+			var deltaAngle = util.angleSub(targetAngle, this.a1);
 			var smallAngle = stat.angSpeed * param.DT;
 			if (Math.abs(deltaAngle) <= smallAngle) {
 				this.a1 = targetAngle;
 			} else {
-				this.a1 = angleAdd(this.a1, deltaAngle > 0 ? smallAngle : -smallAngle);
+				this.a1 = util.angleAdd(
+					this.a1, deltaAngle > 0 ? smallAngle : -smallAngle);
 			}
 
 			// Calculate acceleration.

@@ -47,7 +47,11 @@ module.exports = {
 	},
 	// Weapon stats.
 	WEAPON: {
-		baseCooldown: 0.25,
+		laser: {
+			cooldown: 0.25,
+			spreadX: 0.1,
+			spreadY: 0.1,
+		},
 	},
 	// City generation parameters.
 	CITY: {
