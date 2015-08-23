@@ -125,11 +125,14 @@ function City() {
 	});
 	this.geometry = [];
 	this.obj = new THREE.Group();
+	this.blockGroup = new THREE.Group();
+	this.groundGroup = new THREE.Group();
+	this.obj.add(this.blockGroup, this.groundGroup);
 	this._createGeometry();
 	this.bldBlocks = _.collect(this.blocks, function(block) {
 		var grp = new building.BuildingGroup(
 			block.x0, block.y0, block.x1, block.y1);
-		this.obj.add(grp.obj);
+		this.blockGroup.add(grp.obj);
 		return grp;
 	}, this);
 }
@@ -402,7 +405,7 @@ City.prototype._createGeometry = function() {
 			this.geometry.push(geometry);
 			var obj = new THREE.Mesh(geometry, this.material);
 			obj.position.set(x0, y0, 0);
-			this.obj.add(obj);
+			this.groundGroup.add(obj);
 		}
 	}
 };
