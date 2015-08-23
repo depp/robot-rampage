@@ -6,6 +6,8 @@
 'use strict';
 
 var load = require('./load');
+var input = require('./input');
+var param = require('./param');
 
 var robotMaterial = new THREE.MeshPhongMaterial({color: 0x667788});
 
@@ -30,7 +32,28 @@ function Robot() {
 		[this.mArms[0], this.mArms[1], this.mLegs[0], this.mLegs[1],
 		 this.mHead, this.mTorso],
 		function(part) { this.obj.add(part); }, this);
+
+	this.x0 = 0;
+	this.y0 = 0;
+	this.x1 = 0;
+	this.y1 = 0;
 }
+
+Robot.prototype.update = function() {
+	var ctl = input.gameInput();
+	var stat = param.ROBOT;
+	this.x0 = this.x1;
+	this.y0 = this.y1;
+	this.x1 += stat.speed * param.DT * ctl.x;
+	this.y1 += stat.speed * param.DT * ctl.y;
+};
+
+Robot.prototype.draw = function(frac) {
+	this.obj.position.set(
+		this.x0 + (this.x1 - this.x0) * frac,
+		this.y0 + (this.y1 - this.y0) * frac,
+		0);
+};
 
 module.exports = {
 	Robot: Robot,

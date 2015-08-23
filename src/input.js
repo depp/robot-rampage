@@ -54,8 +54,10 @@ function handleKeyUp(e) {
 	return false;
 }
 
-// Get the 2D movement direction, an [x, y] point inside the unit cirle.
-function getMove() {
+// Get the game input.
+// (x, y): movement control, a point in the unit circle.
+// action: whether action key is down, boolean.
+function gameInput() {
 	var x0 = keysDown.left || keysDown.A;
 	var x1 = keysDown.right || keysDown.D;
 	var y0 = keysDown.down || keysDown.S;
@@ -68,10 +70,14 @@ function getMove() {
 		x *= fac;
 		y *= fac;
 	}
-	console.log(x, y);
+	return {
+		x: x,
+		y: y,
+		action: !!(keysDown.space || keysDown.enter),
+	};
 }
 
 module.exports = {
 	init: init,
-	getMove: getMove,
+	gameInput: gameInput,
 };

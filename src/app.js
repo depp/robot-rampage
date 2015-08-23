@@ -7,6 +7,7 @@
 
 var load = require('./load');
 var input = require('./input');
+var param = require('./param');
 var robot = require('./robot');
 var building = require('./building');
 
@@ -20,6 +21,11 @@ var scene;
 var camera;
 // The three.js controls.
 var controls;
+// Timestamp of the last physics update.
+var updateTime;
+
+// The robot, a robot.Robot.
+var robotObj;
 
 function init(path_map, container) {
 	load.init(path_map, function() { init2(container); });
@@ -48,14 +54,8 @@ function init2(container) {
 	scene.add(light);
 
 	var loader = new THREE.JSONLoader();
-	var robotObj = new robot.Robot();
+	robotObj = new robot.Robot();
 	scene.add(robotObj.obj);
-
-	/*
-	var bld = new building.BuildingGroup(7, 7);
-	bld.obj.position.set(-6, -6, 0);
-	scene.add(bld.obj);
-	*/
 
 	input.init();
 	start();
@@ -65,6 +65,7 @@ function start() {
 	if (handle) {
 		return;
 	}
+	updateTime = -1;
 	handle = window.requestAnimationFrame(render);
 }
 
@@ -77,8 +78,26 @@ function stop() {
 }
 
 function render(time) {
+	var dt = param.DT * 1e3, rate = param.RATE * 1e-3;
 	handle = window.requestAnimationFrame(render);
-	input.getMove();
+	var updateCount = 0, i;
+	if (updateTime < 0) {
+		updateTime = time;
+	} else if (time >= updateTime + dt) {
+		if (time > updateTime + param.MAX_UPDATE_INTERVAL * 1e3) {
+			console.warn('Lag');
+			updateCount = 1;
+			updateTime = time;
+		} else {
+			updateCount = Math.floor((time - updateTime) * rate);
+			updateTime += dt * updateCount;
+		}
+	}
+	for (i = 0; i < updateCount; i++) {
+		robotObj.update();
+	}
+	var frac = (time - updateTime) * rate;
+	robotObj.draw(frac);
 	renderer.render(scene, camera);
 }
 
