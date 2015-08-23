@@ -16,8 +16,6 @@ var T_OPEN = 0, T_BARRIER = 1, T_ROAD = 2, T_LOT = 3, T_BUILDING = 4;
 // A segment of the city.
 // Pass in the previous segment.
 function CitySegment(prev, w, h) {
-	console.log('NEW CITY');
-
 	var roads = new road.RoadNetwork(w, h);
 	roads.logTiles();
 }

@@ -120,7 +120,6 @@ function RoadNetwork(w, h) {
 RoadNetwork.prototype._subdivide = function(parm, block, roadMax) {
 	var subdivide = parm.subdivide;
 	var bw = block.x1 - block.x0, bh = block.y1 - block.y0;
-	console.log('Block:', bw, bh);
 	var area = bw * bh;
 
 	// Calculate maximum and minimum road size.
@@ -128,7 +127,6 @@ RoadNetwork.prototype._subdivide = function(parm, block, roadMax) {
 		roadMax--;
 	}
 	if (!roadMax) {
-		console.log('    Final');
 		this.blocks.push(block);
 		return;
 	}
@@ -141,24 +139,18 @@ RoadNetwork.prototype._subdivide = function(parm, block, roadMax) {
 	// size if subdivision is impossible.
 	var roadSize = roadMin +
 			Math.floor(Math.random() * (roadMax + 1 - roadMin));
-	console.log('Road range', roadMin, roadMax);
 	for (; roadSize > 0; roadSize--) {
 		var dist = subdivide[roadSize].dist;
 		// Possible road locations on each axis.
 		var roadWidth = roadSize * 2 - 1;
 		var nx = Math.max(0, bw + 1 - 2 * dist - roadWidth);
 		var ny = Math.max(0, bh + 1 - 2 * dist - roadWidth);
-		// console.log(bw, nx, nx + roadWidth + dist * 2 - 1);
-		// console.log(bh, ny, ny + roadWidth + dist * 2 - 1);
 		var n = nx + ny;
-		console.log('    Possibilities SIZE=' + roadSize +
-								' NX=' + nx + ' NY=' + ny, ' N=' + n);
 		if (!n) {
 			// No possible locations for this road, try a smaller one.
 			continue;
 		}
 		var roadIndex = Math.floor(Math.random() * n);
-		console.log('    CHOICE', roadIndex, nx, n);
 		var b1, b2, n1, n2;
 		if (roadIndex < nx) {
 			// The range of tiles in the road.
@@ -168,7 +160,6 @@ RoadNetwork.prototype._subdivide = function(parm, block, roadMax) {
 				console.warn('INVALID SUBDIVISION X', roadIndex, nx);
 				continue;
 			}
-			console.log('    Subdivide SIZE=' + roadSize + ' X=' + xc);
 			// Generate new intersections.
 			n1 = splitX(block.n3, xc, block.y0 - 1);
 			n2 = splitX(block.n1, xc, block.y1);
@@ -190,7 +181,6 @@ RoadNetwork.prototype._subdivide = function(parm, block, roadMax) {
 				console.warn('INVALID SUBDIVISION Y', roadIndex, ny);
 				continue;
 			}
-			console.log('    Subdivide SIZE=' + roadSize + ' Y=' + yc);
 			// Generate new intersections.
 			n1 = splitY(block.n2, block.x0 - 1, yc);
 			n2 = splitY(block.n0, block.x1,     yc);
@@ -210,7 +200,6 @@ RoadNetwork.prototype._subdivide = function(parm, block, roadMax) {
 		return;
 	}
 
-	console.log('    Final');
 	this.blocks.push(block);
 };
 
@@ -239,19 +228,24 @@ RoadNetwork.prototype.getTiles = function() {
 			}
 		}
 	}
-	if (false)
 	_.forEach(this.intersections, function(nn) {
 		var n2, sz;
 		// Fill horizontal road.
 		n2 = nn.link0;
 		sz = nn.size0;
 		if (sz > 0) {
-			setRect(nn.x + 1, nn.y - sz, n2.x - 1, nn.y + sz + 1, T_RHORI);
+			setRect(
+				nn.x + 1, nn.y + 1 - sz,
+				n2.x, nn.y + sz,
+				T_RHORI);
 		}
 		// Fill vertical road.
 		n2 = nn.link1; sz = nn.size1;
 		if (sz > 0) {
-			setRect(nn.x - sz, nn.y + 1, nn.x + sz + 1, n2.y - 1, T_RVERT);
+			setRect(
+				nn.x + 1 - sz, nn.y + 1,
+				nn.x + sz, n2.y,
+				T_RVERT);
 		}
 	});
 	_.forEach(this.intersections, function(nn) {
