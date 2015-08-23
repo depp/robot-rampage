@@ -203,6 +203,38 @@ City.prototype.raycast = function(ray) {
 	return {hit: hitType, end: terminus};
 };
 
+// Damage the city.
+City.prototype.damage = function(center, size, amt) {
+	var box = (new THREE.Box3()).setFromCenterAndSize(center, size);
+	var vec = new THREE.Vector3();
+	_.forEach(this.bldBlocks, function(block) {
+		if (!box.isIntersectionBox(block.bbox)) {
+			return;
+		}
+		var destroyed = false;
+		_.forEach(block.binfos, function(binfo) {
+			var dist = center.distanceTo(binfo.bbox.center(vec));
+			var bsz = binfo.bbox.min.distanceTo(binfo.bbox.max) / 2;
+			if (dist < size + bsz) {
+				// console.log('destroy');
+				binfo.obj.parent.remove(binfo.obj);
+				binfo.obj = null;
+				destroyed = true;
+			}
+		});
+		if (destroyed) {
+			var end = block.binfos.length;
+			for (var i = end - 1; i >= 0; i--) {
+				if (!block.binfos[i].obj) {
+					end--;
+					block.binfos[i] = block.binfos[end];
+				}
+			}
+			block.binfos.splice(end, block.binfos.length - end);
+		}
+	});
+};
+
 // Subdivide an area of the road network with roads.
 City.prototype._subdivide = function(parm, block, roadMax) {
 	var subdivide = parm.subdivide;
