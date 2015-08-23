@@ -80,9 +80,13 @@ Robot.prototype.update = function() {
 
 	// Update angle and speed from controls.
 	(function() {
-		var targetSpeed;
+		// Whether the player is trying brake or stop, and the target speed.
+		var doBrake, doStop, targetSpeed;
+		// Control magnitude, and whether it is large enough to be considered
+		// "active".
 		var ctlMag = Math.sqrt(ctl.x * ctl.x + ctl.y * ctl.y);
-		if (ctlMag > 0.25) {
+		var activeMove = ctlMag > 0.25;
+		if (activeMove) {
 			// Player is trying to move us.
 
 			// Control angle.
@@ -93,12 +97,12 @@ Robot.prototype.update = function() {
 
 			// Range of angles considered "forward" and "backward".
 			var fwdAngle = stat.forwardAngle;
-			var bakAngle = stat.backwardAngle;
+			var backAngle = stat.backwardAngle;
 			var latchFrac = Math.min(Math.abs(this.speed) / stat.latchSpeed, 1.0);
 			if (this.speed > 0) {
 				fwdAngle += (stat.latchAngle - fwdAngle) * latchFrac;
 			} else {
-				bakAngle += (stat.latchAngle - bakAngle) * latchFrac;
+				backAngle += (stat.latchAngle - backAngle) * latchFrac;
 			}
 
 			// Set target speed and angle.
@@ -106,15 +110,15 @@ Robot.prototype.update = function() {
 			if (relAngleMag <= fwdAngle) {
 				// Move forward
 				targetAngle = ctlAngle;
-				targetSpeed = ctlMag * stat.fwdSpeed;
-			} else if (relAngleMag <= bakAngle) {
+				targetSpeed = ctlMag * stat.runSpeed;
+			} else if (relAngleMag <= backAngle) {
 				// Turn
 				targetAngle = ctlAngle;
 				targetSpeed = 0;
 			} else {
 				// Move backward
 				targetAngle = angleAdd(ctlAngle, Math.PI);
-				targetSpeed = -ctlMag * stat.bakSpeed;
+				targetSpeed = -ctlMag * stat.backSpeed;
 			}
 
 			// Update the angle.
@@ -125,19 +129,39 @@ Robot.prototype.update = function() {
 			} else {
 				this.a1 = angleAdd(this.a1, deltaAngle > 0 ? smallAngle : -smallAngle);
 			}
+
+			// Calculate acceleration.
+			doBrake = Math.abs(this.speed) > stat.brakeSpeed &&
+					this.speed * targetSpeed < 0;
+			doStop = Math.abs(targetSpeed) < Math.abs(this.speed);
 		} else {
 			// Player is not trying to move us.
 			targetSpeed = 0;
+			doBrake = false;
+			doStop = true;
+		}
+
+		// Acceleration.
+		var accel;
+		if (this.speed > stat.runSpeed) {
+			accel = doBrake ? stat.runBrake :
+				(doStop ? stat.runStop : stat.runAccel);
+		} else {
+			accel = doBrake ? stat.walkBrake :
+				(doStop ? stat.walkStop : stat.walkAccel);
 		}
 
 		// Update the speed.
 		var deltaSpeed = targetSpeed - this.speed;
-		var smallSpeed =
-				(deltaSpeed > 0 ? stat.fwdAccel : -stat.bakAccel) * param.DT;
+		var smallSpeed = accel * param.DT;
 		if (Math.abs(deltaSpeed) < smallSpeed) {
 			this.speed = targetSpeed;
 		} else {
-			this.speed += smallSpeed;
+			if (deltaSpeed > 0) {
+				this.speed += smallSpeed;
+			} else {
+				this.speed -= smallSpeed;
+			}
 		}
 	}).call(this);
 

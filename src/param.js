@@ -18,13 +18,20 @@ module.exports = {
 
 	// Robot stats.
 	ROBOT: {
-		// Forward acceleration and maximum speed.
-		fwdAccel: 2.5,
-		fwdSpeed: 5,
-		// Backward acceleration and maximum speed.
-		bakAccel: 2.5,
-		bakSpeed: 5,
-		// Angular acceleration and maximum speed.
+		// Maximum walking, backward speed, and running speed.
+		walkSpeed: 5,
+		runSpeed: 10,
+		backSpeed: 3,
+		// Minimum speed at which braking occurs.
+		brakeSpeed: 1,
+		// Movement acceleration, stop acceleration, and brake acceleration.
+		walkAccel: 2.5,
+		walkStop: 2.5,
+		walkBrake: 5.0,
+		runAccel: 1.0,
+		runStop: 2.5,
+		runBrake: 3.0,
+		// Angular acceleration and maximum angular speed.
 		angAccel: 10,
 		angSpeed: 2.5,
 		// Control angles in the "forward" range move the robot forward,
