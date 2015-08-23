@@ -51,6 +51,14 @@ module.exports = {
 			cooldown: 0.25,
 			spreadX: 0.1,
 			spreadY: 0.1,
+			angleY: 0.15,
+		},
+		triple: {
+			cooldown: 0.15,
+			spreadX: 0.2,
+			spreadY: 0.2,
+			angleX: 1.0,
+			angleY: 0.2,
 		},
 	},
 	// City generation parameters.

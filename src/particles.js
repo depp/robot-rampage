@@ -23,14 +23,17 @@ ParticleSystem.prototype.add = function(obj) {
 };
 
 // Beam particle cloud class.
-function Beam(v1, v2, param) {
-	var i;
-	var density = param.density || 75;
-	var count = Math.max(Math.round(density * v1.distanceTo(v2)), 1);
-	var spread = param.spread || 0.25;
-	var velocity = param.velocity || 0.5;
+function Beam(traces, param) {
+	var density = param.density || 100;
+	var spread = param.spread || 1.0;
+	var speed = param.speed || 1.0;
 	var texture = param.texture || 'read-pulse';
-	var time = param.time || 0.75;
+	var time = param.time || 1.0;
+
+	var counts = _.collect(traces, function(trace) {
+		return Math.max(Math.round(density * trace.v1.distanceTo(trace.v2)), 1);
+	});
+	var count = _.sum(counts);
 
 	this.material = new THREE.PointCloudMaterial({
 		color: 0xffffffff,
@@ -42,20 +45,27 @@ function Beam(v1, v2, param) {
 	});
 	this.geometry = new THREE.BufferGeometry();
 	var vertex = new Float32Array(count * 3);
-	this.velocity = new Float32Array(count * 3);
-	for (i = 0; i < count; i++) {
-		var frac = Math.random();
-		vertex.set([
-			v1.x + (v2.x - v1.x) * frac + (Math.random() * 2 - 1) * spread,
-			v1.y + (v2.y - v1.y) * frac + (Math.random() * 2 - 1) * spread,
-			v1.z + (v2.z - v1.z) * frac + (Math.random() * 2 - 1) * spread,
-		], i * 3);
-		this.velocity.set([
-			(Math.random() * 2 - 1) * velocity,
-			(Math.random() * 2 - 1) * velocity,
-			(Math.random() * 2 - 1) * velocity,
-		], i * 3);
-	}
+	var velocity = new Float32Array(count * 3);
+	this.velocity = velocity;
+	var i = 0;
+	_.forEach(traces, function(trace, idx) {
+		var v1 = trace.v1, v2 = trace.v2;
+		var j = i, e = i + counts[idx];
+		for (; j < e; j++) {
+			var frac = Math.random();
+			vertex.set([
+				v1.x + (v2.x - v1.x) * frac + (Math.random() * 2 - 1) * spread,
+				v1.y + (v2.y - v1.y) * frac + (Math.random() * 2 - 1) * spread,
+				v1.z + (v2.z - v1.z) * frac + (Math.random() * 2 - 1) * spread,
+			], j * 3);
+			velocity.set([
+				(Math.random() * 2 - 1) * speed,
+				(Math.random() * 2 - 1) * speed,
+				(Math.random() * 2 - 1) * speed,
+			], j * 3);
+		}
+		i = e;
+	});
 	this.geometry.addAttribute(
 		'position', new THREE.BufferAttribute(vertex, 3));
 	this.totalTime = time;
