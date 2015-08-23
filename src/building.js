@@ -172,8 +172,9 @@ function perimeter(w, h, func, thisArg) {
 }
 
 // Class for a group of buildings.  Randomly generates buildings which
-// fill an area with the given width and height.
-function BuildingGroup(w, h) {
+// fill an area with the given space.
+function BuildingGroup(x0, y0, x1, y1) {
+	var w = x1 - x0, h = y1 - y0;
 	if (typeof w != 'number' || typeof h != 'number' || w <= 0 || h <= 0) {
 		throw new Error('Invalid building group size');
 	}
@@ -212,6 +213,7 @@ function BuildingGroup(w, h) {
 
 	var group = this;
 	this.obj = new THREE.Group();
+	this.obj.position.set(x0, y0, 0);
 
 	// Place buildings at points on the perimiter.
 	perimeter(w, h, function(x, y, dir) {

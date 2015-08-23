@@ -32,7 +32,9 @@ function Game(width, height) {
 	this.robot = new robot.Robot();
 	this.scene.add(this.robot.obj);
 
-	new city.CitySegment(null, 32, 32);
+	var citySeg = new city.CitySegment(null, 32, 32);
+	citySeg.obj.position.set(-16, -16, 0);
+	this.scene.add(citySeg.obj);
 }
 
 // Advance world by one frame.
