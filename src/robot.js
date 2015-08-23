@@ -48,6 +48,7 @@ function Robot() {
 	this.a0 = this.a1 = Math.PI / 2;
 	this.speed = 0;
 	this.weapon = new weapon.WeaponState();
+	this.obj.add(this.weapon.obj);
 	// Used by the camera.
 	this.velocity = new THREE.Vector3();
 }

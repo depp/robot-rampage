@@ -36,17 +36,32 @@ function laserTrace(robot, angleX, angleY, wstat) {
 	return {v1: v1, v2: v2};
 }
 
-// Fire a laser beam from the robot.
-function fireLaser(game, robot, traces) {
-	game.particles.add(new particles.Beam(traces, LASER_BEAM));
-}
-
 function WeaponState() {
 	this.cooldown = 0;
 	this.warmup = 0;
 	this.latched = false;
 	this.update = false ? this.updateLaser : this.updateTriple;
+	this.light = new THREE.PointLight(0xffffff);
+	this.light.position.set(0, 4, 2.5);
+	this.light.distance = 15;
+	this.light.intensity = 0;
+	this.lightTime = 0;
+	this.lightScale = 0;
+	this.obj = this.light;
 }
+
+// Flash the light.
+WeaponState.prototype.flashLight = function(light) {
+	this.light.color.setHex(light.color);
+	this.lightTime = light.time;
+	this.lightScale = light.intensity / light.time;
+	// this.light.distance = light.distance;
+};
+
+// Fire a laser beam from the robot.
+WeaponState.prototype.fireLaser = function(game, robot, traces) {
+	game.particles.add(new particles.Beam(traces, LASER_BEAM));
+};
 
 // Common update function.
 WeaponState.prototype.updateCommon = function(action) {
@@ -57,6 +72,8 @@ WeaponState.prototype.updateCommon = function(action) {
 		this.latched = false;
 		this.warmup = 0;
 	}
+	this.lightTime = Math.max(0, this.lightTime - param.DT);
+	this.light.intensity = this.lightTime * this.lightScale;
 };
 
 // Update the weapon.
@@ -69,7 +86,8 @@ WeaponState.prototype.updateLaser = function(game, robot, action) {
 		this.latched = true;
 		this.cooldown = wstat.cooldown;
 		load.getSfx('shoot').play();
-		fireLaser(game, robot, [trace]);
+		this.fireLaser(game, robot, [trace]);
+		this.flashLight(wstat.light);
 	}
 };
 
@@ -85,7 +103,8 @@ WeaponState.prototype.updateTriple = function(game, robot, action) {
 		];
 		this.cooldown = wstat.cooldown;
 		load.getSfx('shoot').play();
-		fireLaser(game, robot, traces);
+		this.fireLaser(game, robot, traces);
+		this.flashLight(wstat.light);
 	}
 };
 

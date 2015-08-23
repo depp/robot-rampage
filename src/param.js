@@ -52,6 +52,12 @@ module.exports = {
 			spreadX: 0.1,
 			spreadY: 0.1,
 			angleY: 0.15,
+			light: {
+				color: 0xff4010,
+				time: 0.4,
+				intensity: 1.0,
+				distance: 10,
+			},
 		},
 		triple: {
 			cooldown: 0.15,
@@ -59,6 +65,12 @@ module.exports = {
 			spreadY: 0.2,
 			angleX: 1.0,
 			angleY: 0.2,
+			light: {
+				color: 0xff4010,
+				time: 0.4,
+				intensity: 2.0,
+				distance: 15,
+			},
 		},
 	},
 	// City generation parameters.

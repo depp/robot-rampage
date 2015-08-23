@@ -15,6 +15,13 @@ var camera = require('./camera');
 function Game(width, height) {
 	this.scene = new THREE.Scene();
 
+	var light;
+	light = new THREE.AmbientLight(0x102030);
+	this.scene.add(light);
+	light = new THREE.DirectionalLight(0x505060);
+	light.position.set(1, 1, 1);
+	this.scene.add(light);
+/*
 	var light = new THREE.PointLight(0xafafff);
 	light.position.set(0, 10, 10);
 	this.scene.add(light);
@@ -24,6 +31,7 @@ function Game(width, height) {
 	light = new THREE.PointLight(0x3fff3f);
 	light.position.set(-10, -10, 10);
 	this.scene.add(light);
+*/
 
 	this.robot = new robot.Robot();
 	this.scene.add(this.robot.obj);
