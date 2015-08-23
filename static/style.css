@@ -6,9 +6,6 @@ body {
     width: 800px;
     margin: 0 auto;
 }
-#main canvas {
-    width: 100%;
-}
 #version {
     text-align: right;
     font-size: 0.8rem;
@@ -45,4 +42,21 @@ a:hover {
 .error {
     border: 1px solid #f66;
     padding: 0.5rem;
+}
+#game {
+    position: relative;
+    width: 100%;
+    height: 450px;
+}
+#game canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+}
+.layer1 {
+    z-index: 0;
+}
+.layer2 {
+    z-index: 1;
 }

@@ -9,6 +9,7 @@ var load = require('./load');
 var input = require('./input');
 var param = require('./param');
 var game = require('./game');
+var hud = require('./hud');
 
 // The requestAnimationFrame handle.
 var handle;
@@ -18,13 +19,19 @@ var renderer;
 var updateTime;
 // The state of the current game.
 var gameState;
+// The HUD object.
+var hudObj;
 
 function init(path_map, container) {
 	load.init(path_map, function() {
 		var WIDTH = 800, HEIGHT = 450;
 
+		hudObj = new hud.HUD(WIDTH, HEIGHT);
+		hudObj.canvas.className = 'layer2';
+		container.appendChild(hudObj.canvas);
 		renderer = new THREE.WebGLRenderer();
 		renderer.setSize(WIDTH, HEIGHT);
+		renderer.domElement.className = 'layer1';
 		container.appendChild(renderer.domElement);
 		gameState = new game.Game(WIDTH, HEIGHT);
 		input.init();
@@ -52,6 +59,11 @@ function stop() {
 
 // Draw the game state, updating it if necessary.
 function render(time) {
+	hudObj.clear();
+	var cxt = hudObj.cxt;
+	cxt.font = 'bold 24px sans';
+	cxt.fillStyle = 'white';
+	cxt.fillText('Hello, world', 10, 30);
 	var dt = param.DT * 1e3, rate = param.RATE * 1e-3;
 	handle = window.requestAnimationFrame(render);
 	var updateCount = 0, i;
