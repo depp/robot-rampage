@@ -58,8 +58,9 @@ function numberWithCommas(x) {
 
 // Draw the HUD.
 Game.prototype.drawHud = function(hud) {
-	hud.clear();
 	var cxt = hud.cxt, w = hud.canvas.width, h = hud.canvas.height;
+	hud.clear();
+	cxt.fillStyle = 'rgba(255, 255, 255, 0.75)';
 	cxt.fillText('Objective: Destroy', 10, 30);
 	cxt.fillText(
 		'Property Damage: $' + numberWithCommas(this.city.propertyDamage),
@@ -70,13 +71,17 @@ Game.prototype.drawHud = function(hud) {
 		0, 0, 32, 32,
 		w - 42, h - 42, 32, 32);
 
-	var sec = Math.floor(this.timeLeft);
+	var sec = Math.floor(Math.max(0, this.timeLeft));
 	var min = Math.floor(sec / 60);
 	sec -= min * 60;
 	sec = '' + sec;
 	min = '' + min;
 	if (sec.length == 1) {
 		sec = '0' + sec;
+	}
+
+	if (this.timeLeft <= 0 || this.timeLeft < 10 && (this.timeLeft % 1) > 0.5) {
+		cxt.fillStyle = 'rgba(255, 0, 0, 0.75)';
 	}
 	var text = 'Time Remaining: ' + min + ':' + sec;
 	var metr = cxt.measureText(text);
