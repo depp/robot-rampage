@@ -6,6 +6,7 @@
 'use strict';
 
 var load = require('./load');
+var input = require('./input');
 var robot = require('./robot');
 var building = require('./building');
 
@@ -48,12 +49,15 @@ function init2(container) {
 
 	var loader = new THREE.JSONLoader();
 	var robotObj = new robot.Robot();
-	// scene.add(robotObj.obj);
+	scene.add(robotObj.obj);
 
+	/*
 	var bld = new building.BuildingGroup(7, 7);
 	bld.obj.position.set(-6, -6, 0);
 	scene.add(bld.obj);
+	*/
 
+	input.init();
 	start();
 }
 
@@ -74,6 +78,7 @@ function stop() {
 
 function render(time) {
 	handle = window.requestAnimationFrame(render);
+	input.getMove();
 	renderer.render(scene, camera);
 }
 
