@@ -56,5 +56,7 @@ module.exports = {
 		],
 		// Maximum length of a city block.
 		blockLength: 10,
+		// Chance to allow a narrow subdivision.
+		narrowChance: 0.6,
 	},
 };

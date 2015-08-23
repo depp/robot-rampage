@@ -139,8 +139,9 @@ RoadNetwork.prototype._subdivide = function(parm, block, roadMax) {
 	// size if subdivision is impossible.
 	var roadSize = roadMin +
 			Math.floor(Math.random() * (roadMax + 1 - roadMin));
+	var allowNarrow = Math.random() < parm.narrowChance;
 	for (; roadSize > 0; roadSize--) {
-		var dist = subdivide[roadSize].dist;
+		var dist = Math.max(subdivide[roadSize].dist, allowNarrow ? 2 : 1);
 		// Possible road locations on each axis.
 		var roadWidth = roadSize * 2 - 1;
 		var nx = Math.max(0, bw + 1 - 2 * dist - roadWidth);
@@ -284,15 +285,8 @@ RoadNetwork.prototype.logTiles = function() {
 	}
 	console.log(lines.join('\n'));
 };
-/*
-function generateRoads(w, h) {
-	var stat = param.CITY;
-	var tile = new Uint8Array(w * h);
-	var block = [];
-	var road
 
-}
-*/
+
 
 module.exports = {
 	RoadNetwork: RoadNetwork,
