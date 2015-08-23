@@ -24,12 +24,15 @@ ParticleSystem.prototype.add = function(obj) {
 
 // Beam particle cloud class.
 function Beam(v1, v2, param) {
-	var density = param.density || 100;
+	var i;
+	var density = param.density || 75;
 	var count = Math.max(Math.round(density * v1.distanceTo(v2)), 1);
-	var spread = param.spread || 0.5;
-	var velocity = param.velocity || 1.0;
+	var spread = param.spread || 0.25;
+	var velocity = param.velocity || 0.5;
 	var texture = param.texture || 'read-pulse';
-	var material = new THREE.PointCloudMaterial({
+	var time = param.time || 0.75;
+
+	this.material = new THREE.PointCloudMaterial({
 		color: 0xffffffff,
 		size: 1.5,
 		map: load.getTexture('red-pulse'),
@@ -37,8 +40,6 @@ function Beam(v1, v2, param) {
 		blending: THREE.AdditiveBlending,
 		depthWrite: false,
 	});
-	var i;
-
 	this.geometry = new THREE.BufferGeometry();
 	var vertex = new Float32Array(count * 3);
 	this.velocity = new Float32Array(count * 3);
@@ -57,13 +58,16 @@ function Beam(v1, v2, param) {
 	}
 	this.geometry.addAttribute(
 		'position', new THREE.BufferAttribute(vertex, 3));
-	this.time = 1.0;
+	this.totalTime = time;
+	this.time = time;
 	this.dead = false;
-	this.obj = new THREE.PointCloud(this.geometry, material);
+	this.obj = new THREE.PointCloud(this.geometry, this.material);
 }
 
 // Update graphics.
 Beam.prototype.draw = function(dt) {
+	this.material.opacity = Math.cos(
+		0.5 * Math.PI * (1 - this.time / this.totalTime));
 	var i, attr = this.geometry.getAttribute('position'), arr = attr.array;
 	for (i = 0; i < arr.length; i++) {
 		arr[i] += this.velocity[i] * dt;
