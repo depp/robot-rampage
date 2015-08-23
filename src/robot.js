@@ -24,7 +24,9 @@ function createPart(name, flipped) {
 
 // Robot class.
 function Robot() {
+	var scale = 0.5;
 	this.obj = new THREE.Group();
+	this.obj.scale.set(scale, scale, scale);
 	this.mArms = [createPart('arm'), createPart('arm', true)];
 	this.mLegs = [createPart('leg'), createPart('leg', true)];
 	this.mHead = createPart('head');
