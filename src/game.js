@@ -6,6 +6,7 @@
 'use strict';
 
 var robot = require('./robot');
+var building = require('./building');
 var city = require('./city');
 var particles = require('./particles');
 var camera = require('./camera');
@@ -27,9 +28,8 @@ function Game(width, height) {
 	this.robot = new robot.Robot();
 	this.scene.add(this.robot.obj);
 
-	var citySeg = new city.CitySegment(null, 32, 32);
-	citySeg.obj.position.set(-16, -16, 0);
-	this.scene.add(citySeg.obj);
+	this.city = new city.City();
+	this.scene.add(this.city.obj);
 
 	this.particles = new particles.ParticleSystem();
 	this.scene.add(this.particles.obj);

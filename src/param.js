@@ -63,6 +63,9 @@ module.exports = {
 	},
 	// City generation parameters.
 	CITY: {
+		// City size.
+		width: 50,
+		height: 50,
 		// Range of sizes for city areas subdivided with roads of the given size.
 		// Minimum distance between roads of the given size.
 		subdivide: [
@@ -76,6 +79,7 @@ module.exports = {
 		// Chance to allow a narrow subdivision.
 		narrowChance: 0.6,
 	},
+	// Camera parameters.
 	CAMERA: {
 		focal: 45,
 		targetSmooth: 0.2,
