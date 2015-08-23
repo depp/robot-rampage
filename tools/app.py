@@ -44,6 +44,7 @@ class App(object):
 
         path_map = {}
         self.build_models(path_map)
+        self.build_audio(path_map, 'sfx')
 
         self.system.build(
             'build/index.html',
@@ -70,6 +71,29 @@ class App(object):
             model_paths[name] = os.path.relpath(
                 os.path.splitext(model_path)[0], out_root)
         path_map['models'] = model_paths
+
+    def build_audio(self, path_map, dirname):
+        """Build the sound effects, adding them to the path map."""
+        audio_files = {}
+        in_root = os.path.join('assets', dirname)
+        out_root = os.path.join('build/assets', dirname)
+        sort_order = ['.ogg', '.m4a']
+        for path in build.all_files(in_root, exts=set(sort_order)):
+            relpath = os.path.relpath(path, in_root)
+            name = os.path.splitext(relpath)[0];
+            out_path = self.system.copy(
+                os.path.join(out_root, relpath),
+                path,
+                bust=True)
+            out_rel = os.path.relpath(out_path, out_root)
+            try:
+                audio_files[name].append(out_rel)
+            except KeyError:
+                audio_files[name] = [out_rel]
+        for flist in audio_files.values():
+            flist.sort(
+                key=lambda x: sort_order.index(os.path.splitext(x)[1]))
+        path_map[dirname] = audio_files
 
     def lodash_js(self):
         with tempfile.TemporaryDirectory() as path:
@@ -109,7 +133,8 @@ class App(object):
         }
         def repl(m):
             name = m.group(1)
-            value = json.dumps(repls[name], separators=(',', ':'))
+            value = json.dumps(repls[name], separators=(',', ':'),
+                               sort_keys=True)
             return 'var {} = {};'.format(name, repls[name])
         data = re.sub(r'var ([\w]+) = null;', repl, data)
         return build.minify_js(
