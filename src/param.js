@@ -45,6 +45,11 @@ module.exports = {
 		backwardAngle: Math.PI * 0.8,
 		latchSpeed: 1,
 	},
+	// Weapon stats.
+	WEAPON: {
+		baseCooldown: 0.25,
+	},
+	// City generation parameters.
 	CITY: {
 		// Range of sizes for city areas subdivided with roads of the given size.
 		// Minimum distance between roads of the given size.

@@ -8,6 +8,7 @@
 var load = require('./load');
 var input = require('./input');
 var param = require('./param');
+var weapon = require('./weapon');
 
 var robotMaterial = new THREE.MeshPhongMaterial({color: 0x667788});
 
@@ -37,6 +38,7 @@ function Robot() {
 	this.y0 = this.y1 = 0;
 	this.a0 = this.a1 = Math.PI / 2;
 	this.speed = 0;
+	this.weapon = new weapon.WeaponState();
 }
 
 // Compute the angle a - b, in the range [-pi, +pi].
@@ -180,9 +182,7 @@ Robot.prototype.update = function(game) {
 		this.y1 += this.speed * param.DT * diry;
 	}).call(this);
 
-	if (ctl.action) {
-		load.getSfx('shoot').play();
-	}
+	this.weapon.update(game, this, ctl.action);
 };
 
 // Update graphics.
