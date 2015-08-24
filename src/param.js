@@ -131,7 +131,7 @@ module.exports = {
 		// Number of powerups to spawn.
 		numSpawn: 8,
 		// Weapons to spawn
-		weapons: ['triple', 'wave', 'bomb'],
+		weapons: ['triple', 'wave',/* 'bomb' */],
 	},
 	// Camera parameters.
 	CAMERA: {
