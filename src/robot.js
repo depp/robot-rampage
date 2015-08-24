@@ -30,7 +30,7 @@ function createPart(name, flipped) {
 }
 
 // Robot class.
-function Robot() {
+function Robot(pos) {
 	this.stats = STATS;
 	this.obj = new THREE.Group();
 	this.obj.scale.set(STATS.scale, STATS.scale, STATS.scale);
@@ -43,8 +43,8 @@ function Robot() {
 		 this.mHead, this.mTorso],
 		function(part) { this.obj.add(part); }, this);
 
-	this.x0 = this.x1 = 0;
-	this.y0 = this.y1 = 0;
+	this.x0 = this.x1 = pos.x;
+	this.y0 = this.y1 = pos.y;
 	this.a0 = this.a1 = Math.PI / 2;
 	this.speed = 0;
 	this.weapon = new weapon.WeaponState();

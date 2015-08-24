@@ -24,11 +24,11 @@ function Game(width, height) {
 	light.position.set(1, 1, 1);
 	this.scene.add(light);
 
-	this.robot = new robot.Robot();
-	this.scene.add(this.robot.obj);
-
 	this.city = new city.City();
 	this.scene.add(this.city.obj);
+
+	this.robot = new robot.Robot(this.city.playerStart);
+	this.scene.add(this.robot.obj);
 
 	this.particles = new particles.ParticleSystem();
 	this.scene.add(this.particles.obj);
