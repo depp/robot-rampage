@@ -27,6 +27,12 @@ var TRIPLE_BEAM = _.assign({
 	spread: 0.08,
 	texture: 'red-pulse',
 }, BEAM_BASE);
+var WAVE_BEAM = _.assign({
+	time: 0.3,
+	size: 1.0,
+	spread: 0.15,
+	texture: 'amber-pulse',
+}, BEAM_BASE);
 
 // Calculate a laser trace {v1, v2}.
 function laserTrace(game, robot, angleX, angleY, wstat) {
@@ -64,7 +70,9 @@ function WeaponState() {
 	this.light = new light.Light();
 	this.light.obj.position.set(0, 4, 2.5);
 	this.obj = this.light.obj;
-	this.setWeapon('laser');
+	this.setWeapon('wave');
+	this.ftime = 0;
+	this.fdir = 1;
 }
 
 WeaponState.prototype.setWeapon = function(name) {
@@ -83,6 +91,7 @@ WeaponState.prototype.setWeapon = function(name) {
 // Common update function.
 WeaponState.prototype.updateCommon = function(action) {
 	this.cooldown = Math.max(0, this.cooldown - param.DT);
+	this.ftime = Math.max(0, this.ftime - param.DT);
 	if (this.time !== null) {
 		this.time -= param.DT;
 		if (this.time < 0) {
@@ -132,6 +141,21 @@ WeaponState.prototype.updateTriple = function(game, robot, action) {
 
 WeaponState.prototype.updateWave = function(game, robot, action) {
 	this.updateCommon(action);
+	var wstat = param.WEAPON.wave;
+	if (this.ftime > 0) {
+		var frac = ((this.ftime / wstat.firetime) * 2 - 1) * this.fdir;
+		var traces = [
+			laserTrace(game, robot, frac * wstat.angleX, wstat.angleY, wstat),
+			laserTrace(game, robot, frac * wstat.angleX, wstat.angleY, wstat),
+			laserTrace(game, robot, frac * wstat.angleX, wstat.angleY, wstat),
+		];
+		game.particles.add(new particles.Beam(traces, WAVE_BEAM));
+		this.light.flash(wstat.light);
+	} else if (action && !this.latched && this.warmup > wstat.warmup) {
+		this.latched = true;
+		this.ftime = wstat.firetime;
+		load.getSfx('wind-up').play();
+	}
 };
 
 WeaponState.prototype.updateBomb = function(game, robot, action) {

@@ -70,7 +70,7 @@ module.exports = {
 			angleY: 0.2,
 			light: {
 				color: 0xff4010,
-				time: 0.4,
+				time: 0.2,
 				intensity: 2.0,
 				distance: 15,
 			},
@@ -80,6 +80,18 @@ module.exports = {
 			time: 15,
 		},
 		wave: {
+			warmup: 0.4,
+			firetime: 1.5,
+			spreadX: 0.1,
+			spreadY: 0.3,
+			angleX: 0.6,
+			angleY: 0.3,
+			light: {
+				color: 0xffff10,
+				time: 0.4,
+				intensity: 4.0,
+				distance: 15,
+			},
 			icolor: 0xffff00,
 			ix: 0,
 			iy: 1,
