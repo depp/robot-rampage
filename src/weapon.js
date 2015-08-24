@@ -70,7 +70,7 @@ function WeaponState() {
 	this.light = new light.Light();
 	this.light.obj.position.set(0, 4, 2.5);
 	this.obj = this.light.obj;
-	this.setWeapon('wave');
+	this.setWeapon('laser');
 	this.ftime = 0;
 	this.fdir = 1;
 }
@@ -95,6 +95,7 @@ WeaponState.prototype.updateCommon = function(action) {
 	if (this.time !== null) {
 		this.time -= param.DT;
 		if (this.time < 0) {
+			load.getSfx('lost').play();
 			this.setWeapon('laser');
 		}
 	}
@@ -145,8 +146,6 @@ WeaponState.prototype.updateWave = function(game, robot, action) {
 	if (this.ftime > 0) {
 		var frac = ((this.ftime / wstat.firetime) * 2 - 1) * this.fdir;
 		var traces = [
-			laserTrace(game, robot, frac * wstat.angleX, wstat.angleY, wstat),
-			laserTrace(game, robot, frac * wstat.angleX, wstat.angleY, wstat),
 			laserTrace(game, robot, frac * wstat.angleX, wstat.angleY, wstat),
 		];
 		game.particles.add(new particles.Beam(traces, WAVE_BEAM));

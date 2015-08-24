@@ -188,6 +188,7 @@ Robot.prototype.pickupTest = function(game) {
 		if (d2 < 3.0) {
 			var newWeapon = spawn.userData;
 			spawn.parent.remove(spawn);
+			load.getSfx('pickup').play();
 			this.weapon.setWeapon(newWeapon);
 			return;
 		}

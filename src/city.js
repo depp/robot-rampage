@@ -328,6 +328,7 @@ City.prototype.damage = function(center, size, amt) {
 City.prototype.update = function(game) {
 	this.explosionLight.update();
 	if (this.pendingExplosions.length > 0) {
+		load.getSfx('boom').play();
 		game.particles.add(new particles.Explosion(
 			this.pendingExplosions, {}));
 		var px = 0, py = 0, pz = 0, tw = 0, w, box, i;
