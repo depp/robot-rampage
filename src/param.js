@@ -60,6 +60,7 @@ module.exports = {
 			},
 			ix: 0,
 			iy: 0,
+			time: null,
 		},
 		triple: {
 			cooldown: 0.15,
@@ -76,16 +77,19 @@ module.exports = {
 			icolor: 0xff0000,
 			ix: 1,
 			iy: 0,
+			time: 15,
 		},
 		wave: {
 			icolor: 0xffff00,
 			ix: 0,
 			iy: 1,
+			time: 15,
 		},
 		bomb: {
 			icolor: 0x2000ff,
 			ix: 1,
 			iy: 1,
+			time: 15,
 		},
 	},
 	// Explosion lighting.

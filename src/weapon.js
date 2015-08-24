@@ -61,11 +61,10 @@ function WeaponState() {
 	this.cooldown = 0;
 	this.warmup = 0;
 	this.latched = false;
-	this.update = this.updateLaser;
-	this.weapon = 'laser';
 	this.light = new light.Light();
 	this.light.obj.position.set(0, 4, 2.5);
 	this.obj = this.light.obj;
+	this.setWeapon('laser');
 }
 
 WeaponState.prototype.setWeapon = function(name) {
@@ -78,11 +77,18 @@ WeaponState.prototype.setWeapon = function(name) {
 		return;
 	}
 	this.weapon = name;
+	this.time = param.WEAPON[name].time;
 };
 
 // Common update function.
 WeaponState.prototype.updateCommon = function(action) {
 	this.cooldown = Math.max(0, this.cooldown - param.DT);
+	if (this.time !== null) {
+		this.time -= param.DT;
+		if (this.time < 0) {
+			this.setWeapon('laser');
+		}
+	}
 	if (action) {
 		this.warmup += param.DT;
 	} else {
@@ -125,9 +131,11 @@ WeaponState.prototype.updateTriple = function(game, robot, action) {
 };
 
 WeaponState.prototype.updateWave = function(game, robot, action) {
+	this.updateCommon(action);
 };
 
 WeaponState.prototype.updateBomb = function(game, robot, action) {
+	this.updateCommon(action);
 };
 
 module.exports = {

@@ -57,6 +57,7 @@ function numberWithCommas(x) {
 
 // Draw the HUD.
 Game.prototype.drawHud = function(hud) {
+	var text, metr;
 	var cxt = hud.cxt, w = hud.canvas.width, h = hud.canvas.height;
 	hud.clear();
 	cxt.fillStyle = 'rgba(255, 255, 255, 0.75)';
@@ -70,6 +71,12 @@ Game.prototype.drawHud = function(hud) {
 		this.weaponIcons,
 		wstat.ix * 32, wstat.iy * 32, 32, 32,
 		w - 42, h - 42, 32, 32);
+	var wtime = this.robot.weapon.time;
+	if (wtime !== null) {
+		text = Math.max(0, Math.floor(wtime)).toString();
+		metr = cxt.measureText(text);
+		cxt.fillText(text, w - metr.width - 52, h - 16);
+	}
 
 	var sec = Math.floor(Math.max(0, this.timeLeft));
 	var min = Math.floor(sec / 60);
@@ -83,8 +90,8 @@ Game.prototype.drawHud = function(hud) {
 	if (this.timeLeft <= 0 || this.timeLeft < 10 && (this.timeLeft % 1) > 0.5) {
 		cxt.fillStyle = 'rgba(255, 0, 0, 0.75)';
 	}
-	var text = 'Time Remaining: ' + min + ':' + sec;
-	var metr = cxt.measureText(text);
+	text = 'Time Remaining: ' + min + ':' + sec;
+	metr = cxt.measureText(text);
 	cxt.fillText(text, w - metr.width - 10, 30);
 };
 
