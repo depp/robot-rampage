@@ -38,7 +38,7 @@ function Game(width, height) {
 	this.timeLeft = 120;
 	this.weaponIcons = load.getHudImage('weapon-icons');
 	this.music = load.getMusic('the-humans-will-burn');
-	// this.music.play();
+	this.music.play();
 }
 
 // Advance world by one frame.
