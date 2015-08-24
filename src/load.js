@@ -187,7 +187,6 @@ function initMusic(path_map, func) {
 		});
 	});
 	func();
-	console.log(music);
 }
 
 function getMusic(name) {
