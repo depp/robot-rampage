@@ -61,11 +61,24 @@ function WeaponState() {
 	this.cooldown = 0;
 	this.warmup = 0;
 	this.latched = false;
-	this.update = true ? this.updateLaser : this.updateTriple;
+	this.update = this.updateLaser;
+	this.weapon = 'laser';
 	this.light = new light.Light();
 	this.light.obj.position.set(0, 4, 2.5);
 	this.obj = this.light.obj;
 }
+
+WeaponState.prototype.setWeapon = function(name) {
+	switch (name) {
+	case 'laser': this.update = this.updateLaser; break;
+	case 'triple': this.update = this.updateTriple; break;
+	case 'wave': this.update = this.updateWave; break;
+	case 'bomb': this.update = this.updateBomb; break;
+	default:
+		return;
+	}
+	this.weapon = name;
+};
 
 // Common update function.
 WeaponState.prototype.updateCommon = function(action) {
@@ -109,6 +122,12 @@ WeaponState.prototype.updateTriple = function(game, robot, action) {
 		game.particles.add(new particles.Beam(traces, TRIPLE_BEAM));
 		this.light.flash(wstat.light);
 	}
+};
+
+WeaponState.prototype.updateWave = function(game, robot, action) {
+};
+
+WeaponState.prototype.updateBomb = function(game, robot, action) {
 };
 
 module.exports = {

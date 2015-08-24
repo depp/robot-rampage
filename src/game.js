@@ -64,10 +64,11 @@ Game.prototype.drawHud = function(hud) {
 	cxt.fillText(
 		'Property Damage: $' + numberWithCommas(this.city.propertyDamage),
 		10, h - 10);
-	var i = 0;
+
+	var wstat = param.WEAPON[this.robot.weapon.weapon];
 	cxt.drawImage(
 		this.weaponIcons,
-		0, 0, 32, 32,
+		wstat.ix * 32, wstat.iy * 32, 32, 32,
 		w - 42, h - 42, 32, 32);
 
 	var sec = Math.floor(Math.max(0, this.timeLeft));

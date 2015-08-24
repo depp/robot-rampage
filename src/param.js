@@ -58,6 +58,8 @@ module.exports = {
 				intensity: 1.0,
 				distance: 10,
 			},
+			ix: 0,
+			iy: 0,
 		},
 		triple: {
 			cooldown: 0.15,
@@ -72,12 +74,18 @@ module.exports = {
 				distance: 15,
 			},
 			icolor: 0xff0000,
+			ix: 1,
+			iy: 0,
 		},
 		wave: {
 			icolor: 0xffff00,
+			ix: 0,
+			iy: 1,
 		},
 		bomb: {
 			icolor: 0x2000ff,
+			ix: 1,
+			iy: 1,
 		},
 	},
 	// Explosion lighting.
