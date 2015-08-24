@@ -173,7 +173,25 @@ Robot.prototype.update = function(game, allowInput) {
 		this.y1 += this.speed * param.DT * diry;
 	}).call(this);
 
+	this.pickupTest(game);
 	this.weapon.update(game, this, ctl.action);
+};
+
+Robot.prototype.pickupTest = function(game) {
+	var grp = game.city.spawnGroup;
+	var i;
+	for (i = 0; i < grp.children.length; i++) {
+		var spawn = grp.children[i];
+		var dx = spawn.position.x - this.x1;
+		var dy = spawn.position.y - this.y1;
+		var d2 = dx * dx + dy * dy;
+		if (d2 < 3.0) {
+			var newWeapon = spawn.userData;
+			spawn.parent.remove(spawn);
+			console.log('WEAPON', newWeapon);
+			return;
+		}
+	}
 };
 
 // Update graphics.
