@@ -213,7 +213,7 @@ City.prototype.genSpawns = function() {
 	_.forEach(spawns, function(p) {
 		var i = Math.floor(Math.random() * weapons.length);
 		var mesh = new THREE.Mesh(geom, mats[i]);
-		mesh.position.set(p.x * 0.04, p.y * 0.04, 1.5);
+		mesh.position.set(p.x, p.y, 1.5);
 		this.spawnGroup.add(mesh);
 	}, this);
 };

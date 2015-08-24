@@ -5,7 +5,7 @@
    See LICENSE.txt for details. */
 'use strict';
 
-var nextState = {name: 'intro'};
+var nextState = {name: 'game'};
 
 module.exports = {
 	get: function() {

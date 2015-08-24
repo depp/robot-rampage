@@ -35,7 +35,7 @@ function Game(width, height) {
 
 	this.camera = new camera.Camera(this.robot, width, height);
 
-	this.timeLeft = 15;
+	this.timeLeft = 120;
 	this.weaponIcons = load.getHudImage('weapon-icons');
 	console.log(this.weaponIcons);
 	this.music = load.getMusic('the-humans-will-burn');
