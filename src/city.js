@@ -130,7 +130,8 @@ function City() {
 	this.obj = new THREE.Group();
 	this.blockGroup = new THREE.Group();
 	this.groundGroup = new THREE.Group();
-	this.obj.add(this.blockGroup, this.groundGroup);
+	this.spawnGroup = new THREE.Group();
+	this.obj.add(this.blockGroup, this.groundGroup, this.spawnGroup);
 	this._createGeometry();
 	this.bldBlocks = _.collect(this.blocks, function(block) {
 		var grp = new building.BuildingGroup(
@@ -172,7 +173,8 @@ City.prototype.genSpawns = function() {
 	});
 	this.playerStart = best;
 	spawns.push(best);
-	for (var i = 0; i < 10; i++) {
+	var n = param.CITY.numSpawn;
+	for (var i = 0; i < n; i++) {
 		bestD = 0;
 		best = {x:0, y:0};
 		for (var j = 0; j < points.length; j++) {
@@ -196,7 +198,23 @@ City.prototype.genSpawns = function() {
 		}
 		spawns.push(best);
 	}
-	console.log(spawns);
+	spawns.splice(0, 1);
+	var geom = new THREE.BoxGeometry(1, 1, 1);
+	var weapons = param.CITY.weapons;
+	var wstats = param.WEAPON;
+	var mats = _.collect(weapons, function(weap) {
+		var wstat = wstats[weap];
+		return new THREE.MeshPhongMaterial({
+			color: 0xffffff,
+			emissive: (new THREE.Color()).setHex(wstat.icolor).multiplyScalar(0.8),
+		});
+	});
+	_.forEach(spawns, function(p) {
+		var i = Math.floor(Math.random() * weapons.length);
+		var mesh = new THREE.Mesh(geom, mats[i]);
+		mesh.position.set(p.x * 0.04, p.y * 0.04, 1.5);
+		this.spawnGroup.add(mesh);
+	}, this);
 };
 
 var GROUND = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);

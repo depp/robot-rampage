@@ -71,6 +71,13 @@ module.exports = {
 				intensity: 2.0,
 				distance: 15,
 			},
+			icolor: 0xff0000,
+		},
+		wave: {
+			icolor: 0xffff00,
+		},
+		bomb: {
+			icolor: 0x2000ff,
 		},
 	},
 	// Explosion lighting.
@@ -97,6 +104,10 @@ module.exports = {
 		blockLength: 10,
 		// Chance to allow a narrow subdivision.
 		narrowChance: 0.6,
+		// Number of powerups to spawn.
+		numSpawn: 8,
+		// Weapons to spawn
+		weapons: ['triple', 'wave', 'bomb'],
 	},
 	// Camera parameters.
 	CAMERA: {
