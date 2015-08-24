@@ -146,6 +146,7 @@ function City() {
 	this.propertyDamage = 0;
 
 	this.genSpawns();
+	this.animTimer = 0;
 }
 
 City.prototype.getBigIntersections = function() {
@@ -342,6 +343,19 @@ City.prototype.update = function(game) {
 		this.explosionLight.flash(param.EXPLOSION_LIGHT);
 		this.pendingExplosions = [];
 	}
+	this.animTimer += param.DT;
+};
+
+City.prototype.draw = function(frac) {
+	var quat = new THREE.Quaternion().setFromEuler(
+		new THREE.Euler(
+			this.animTimer,
+			this.animTimer * 1.5,
+			this.animTimer * 0.75,
+			'ZYX'));
+	_.forEach(this.spawnGroup.children, function(obj) {
+		obj.quaternion.copy(quat);
+	});
 };
 
 // Subdivide an area of the road network with roads.

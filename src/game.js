@@ -92,6 +92,7 @@ Game.prototype.drawHud = function(hud) {
 Game.prototype.draw = function(renderer, hud, frac) {
 	this.drawHud(hud);
 	this.robot.draw(frac);
+	this.city.draw(frac);
 	this.particles.draw(frac);
 	this.camera.draw(frac);
 	renderer.render(this.scene, this.camera.camera);
